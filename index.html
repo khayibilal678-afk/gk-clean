@@ -1,0 +1,1322 @@
+<!doctype html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex">
+<title>Planning Ménage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600&family=Public+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Mise en page : une seule colonne centrée, onglets simples, listes lisibles. Propriétés logiques pour passer de gauche-droite à droite-gauche. */
+:root {
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --field: #f7f9fb;
+  --fg: #16212b;
+  --muted: #5b6b79;
+  --line: #dbe2e8;
+  --accent: #0a6a86;
+  --accent-fg: #ffffff;
+  --accent-soft: #e0f1f6;
+  --warn: #9a4a00;
+  --warn-soft: #fdebcf;
+  --ok: #17703f;
+  --ok-soft: #e0f4e8;
+  --danger: #b3261e;
+  --chip-bg-l: 92%;
+  --chip-fg-l: 24%;
+  --font: "Public Sans", "Noto Sans Arabic", "Segoe UI", system-ui, -apple-system, Tahoma, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e151b;
+    --surface: #16212a;
+    --field: #101a21;
+    --fg: #e7eef4;
+    --muted: #93a4b3;
+    --line: #2a3844;
+    --accent: #4cc0de;
+    --accent-fg: #052330;
+    --accent-soft: #13313c;
+    --warn: #f1b560;
+    --warn-soft: #3a2a10;
+    --ok: #66d598;
+    --ok-soft: #12321f;
+    --danger: #ff8c80;
+    --chip-bg-l: 22%;
+    --chip-fg-l: 84%;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e151b;
+  --surface: #16212a;
+  --field: #101a21;
+  --fg: #e7eef4;
+  --muted: #93a4b3;
+  --line: #2a3844;
+  --accent: #4cc0de;
+  --accent-fg: #052330;
+  --accent-soft: #13313c;
+  --warn: #f1b560;
+  --warn-soft: #3a2a10;
+  --ok: #66d598;
+  --ok-soft: #12321f;
+  --danger: #ff8c80;
+  --chip-bg-l: 22%;
+  --chip-fg-l: 84%;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.5;
+  padding-inline: 16px;
+  padding-block: 20px 56px;
+}
+h1, h2, h3 { margin: 0; line-height: 1.25; text-wrap: balance; }
+h1 { font-size: 1.5rem; font-weight: 700; }
+h2 { font-size: 1.2rem; font-weight: 600; }
+h3 { font-size: 1.02rem; font-weight: 600; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.hint { color: var(--muted); font-size: 0.88rem; margin: 0; }
+.num { direction: ltr; unicode-bidi: isolate; display: inline-block; font-variant-numeric: tabular-nums; }
+input[type="number"], input[type="time"], input[type="date"] { direction: ltr; }
+[dir="rtl"] .ic-dir { transform: scaleX(-1); }
+
+.app { max-width: 56rem; margin-inline: auto; display: flex; flex-direction: column; gap: 20px; }
+.top { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between; }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* Onglets */
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); overflow-x: auto; }
+.tabs button { border: 0; background: none; padding: 12px 16px; color: var(--muted); font-weight: 500; border-bottom: 3px solid transparent; margin-bottom: -1px; white-space: nowrap; }
+.tabs button[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent); font-weight: 600; }
+
+/* Boutons et champs */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 42px; padding: 8px 16px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); font-weight: 500; text-decoration: none; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.danger { color: var(--danger); border-color: var(--danger); background: transparent; }
+.btn.danger.armed { background: var(--danger); color: #fff; }
+.btn.small { min-height: 36px; padding: 5px 12px; font-size: 0.9rem; }
+.btn.block { width: 100%; }
+.btn svg { width: 16px; height: 16px; flex: none; }
+.linkbtn { border: 0; background: none; color: var(--accent); padding: 4px 2px; font-size: 0.88rem; font-weight: 500; text-decoration: underline; text-underline-offset: 3px; }
+select, input[type="text"], input[type="search"], input[type="password"], input[type="number"], input[type="date"], input[type="time"] { background: var(--field); border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; min-height: 42px; width: 100%; }
+.bar { display: flex; flex-wrap: wrap; gap: 10px 12px; align-items: center; justify-content: space-between; }
+.grp { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; min-width: 0; }
+.bar select, .bar input[type="search"] { width: auto; max-width: 100%; }
+.bar input[type="search"] { min-width: 13rem; }
+.period { font-weight: 600; font-size: 1.1rem; padding-inline: 4px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+
+/* Résumé */
+.sum { display: flex; flex-wrap: wrap; gap: 6px 28px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+.sum div { display: flex; flex-direction: column; min-width: 0; }
+.sum b { font-size: 1.2rem; font-weight: 600; }
+.sum span { color: var(--muted); font-size: 0.82rem; }
+.sum .bad b { color: var(--warn); }
+
+/* Pour commencer */
+.start ol { margin: 12px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; counter-reset: s; }
+.start li { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; justify-content: space-between; padding: 10px 0; border-top: 1px solid var(--line); }
+.start li span { flex: 1 1 16rem; }
+.start li.ok span { color: var(--muted); text-decoration: line-through; }
+
+/* Jours */
+.days { display: flex; flex-direction: column; gap: 22px; }
+.day { display: flex; flex-direction: column; gap: 8px; }
+.day-h { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+.day-h h3::first-letter { text-transform: uppercase; }
+.day-h .tot { margin-inline-start: auto; color: var(--muted); font-size: 0.88rem; }
+.day.today .day-h { border-bottom: 2px solid var(--accent); }
+.badge { font-size: 0.72rem; background: var(--accent); color: var(--accent-fg); border-radius: 4px; padding: 2px 7px; font-weight: 600; }
+.empty { color: var(--muted); margin: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
+.add-link { border: 0; background: none; color: var(--accent); padding: 4px 0; font-weight: 500; text-decoration: underline; text-underline-offset: 3px; }
+ul.list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+
+/* Mission */
+.mission { display: grid; grid-template-columns: 4.4rem minmax(0, 1fr) auto; gap: 6px 14px; align-items: start; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.when { display: flex; flex-direction: column; line-height: 1.35; font-weight: 600; }
+.when .end { color: var(--muted); font-size: 0.85rem; font-weight: 400; }
+.body { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.body strong { font-weight: 600; overflow-wrap: anywhere; }
+.sub { color: var(--muted); font-size: 0.88rem; overflow-wrap: anywhere; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font-size: 0.9rem; margin-top: 2px; }
+.chip { display: inline-flex; align-items: center; padding: 1px 10px; border-radius: 999px; font-weight: 600; font-size: 0.84rem; background: hsl(var(--h) 55% var(--chip-bg-l)); color: hsl(var(--h) 55% var(--chip-fg-l)); }
+.extra { color: var(--warn); font-weight: 500; }
+.note { color: var(--muted); font-style: italic; overflow-wrap: anywhere; }
+.alerts { display: flex; flex-direction: column; gap: 3px; margin-top: 4px; }
+.alert { background: var(--warn-soft); color: var(--warn); border-radius: 6px; padding: 3px 8px; font-size: 0.84rem; font-weight: 500; width: fit-content; max-width: 100%; }
+.acts { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.mission.done { background: var(--ok-soft); border-color: transparent; }
+.check[aria-pressed="true"] { background: var(--ok); border-color: var(--ok); color: var(--surface); }
+@media (max-width: 600px) {
+  .mission { grid-template-columns: 4rem minmax(0, 1fr); }
+  .acts { grid-column: 2; justify-content: flex-start; }
+}
+
+/* Maisons et équipe */
+.stack { display: flex; flex-direction: column; gap: 22px; }
+.cgroup { display: flex; flex-direction: column; gap: 8px; }
+.cgroup-h { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+.cgroup-h span { margin-inline-start: auto; color: var(--muted); font-size: 0.88rem; }
+.svc { display: inline-flex; align-items: center; font-size: 0.78rem; font-weight: 600; padding: 1px 8px; border-radius: 4px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+.svt { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.svt[hidden] { display: none; }
+.svt input[type="number"] { width: 6.5rem; flex: none; }
+.svgrid { display: flex; flex-direction: column; gap: 6px; }
+.svrow { display: flex; gap: 8px; align-items: center; }
+.svrow input[type="text"] { flex: 1; width: auto; min-width: 0; }
+.subh { margin-top: 18px; }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 14px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.row .name { font-weight: 600; overflow-wrap: anywhere; }
+.row .facts { display: flex; flex-wrap: wrap; gap: 2px 14px; align-items: center; margin-top: 2px; }
+.row .who { display: flex; flex-wrap: wrap; gap: 4px 6px; margin-top: 6px; }
+.wcard { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+.wcard .row { border: 0; }
+.wcard details { border-top: 1px solid var(--line); }
+.wcard summary { padding: 11px 14px; cursor: pointer; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; }
+.wcard summary .sub { margin-inline-start: auto; }
+.wcard .wl { padding: 0 14px 12px; display: flex; flex-direction: column; gap: 6px; }
+.wcard .wl p { margin: 0; font-size: 0.92rem; overflow-wrap: anywhere; }
+
+/* Heures */
+.tablewrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+th, td { padding: 11px 14px; text-align: end; white-space: nowrap; border-bottom: 1px solid var(--line); }
+th:first-child, td:first-child, .txt { text-align: start; }
+thead th { font-size: 0.8rem; color: var(--muted); font-weight: 600; }
+tbody th { font-weight: 400; }
+tfoot td, tfoot th { font-weight: 600; border-bottom: 0; background: var(--field); }
+details.det { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+details.det + details.det { margin-top: 8px; }
+details.det > summary { padding: 12px 14px; cursor: pointer; display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; }
+details.det > summary .tot { margin-inline-start: auto; font-weight: 600; }
+details.det .tablewrap { border: 0; border-top: 1px solid var(--line); border-radius: 0; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--surface); }
+.seg button { border: 0; background: none; padding: 8px 16px; min-height: 40px; color: var(--muted); font-weight: 500; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); }
+
+/* Dialogue */
+dialog { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); color: var(--fg); padding: 0; width: min(36rem, calc(100vw - 24px)); max-height: calc(100dvh - 24px); }
+dialog::backdrop { background: rgba(5, 12, 18, 0.55); }
+.dlg { display: flex; flex-direction: column; gap: 16px; padding: 20px; }
+.fld { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.fld > label, .fld > .lab { font-size: 0.88rem; font-weight: 600; }
+.fld small { color: var(--muted); }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.inline { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.inline input[type="number"] { width: 6.5rem; }
+.preview { background: var(--accent-soft); border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; font-size: 0.94rem; }
+.err { color: var(--danger); margin: 0; font-weight: 500; }
+.dlg-foot { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; align-items: center; }
+.assign { max-height: 42vh; overflow: auto; border: 1px solid var(--line); border-radius: 10px; padding: 10px; display: flex; flex-direction: column; gap: 12px; background: var(--field); }
+.cityg { display: flex; flex-direction: column; gap: 2px; }
+.cityh { display: flex; justify-content: space-between; align-items: center; gap: 10px; border-bottom: 1px solid var(--line); padding-bottom: 2px; }
+.chk { display: flex; gap: 10px; align-items: flex-start; padding: 6px 2px; min-height: 42px; cursor: pointer; }
+.chk input, .chkrow input { width: 20px; height: 20px; margin: 2px 0 0; flex: none; accent-color: var(--accent); }
+.chk span { display: flex; flex-direction: column; min-width: 0; }
+.chk b { font-weight: 600; overflow-wrap: anywhere; }
+.chk small { color: var(--muted); overflow-wrap: anywhere; }
+.chk[hidden], .cityg[hidden] { display: none; }
+.chkrow { display: flex; gap: 10px; align-items: center; cursor: pointer; min-height: 38px; }
+.sec { display: flex; flex-direction: column; gap: 10px; padding-top: 14px; border-top: 1px solid var(--line); }
+.sec:first-of-type { border-top: 0; padding-top: 0; }
+@media (max-width: 440px) { .grid2 { grid-template-columns: minmax(0, 1fr); } }
+
+/* Connexion */
+.authbox { max-width: 24rem; margin: 6vh auto 0; display: flex; flex-direction: column; gap: 18px; }
+.authbox .langrow { display: flex; justify-content: flex-end; }
+.form { display: flex; flex-direction: column; gap: 14px; }
+details.forgot { color: var(--muted); font-size: 0.92rem; }
+details.forgot summary { cursor: pointer; }
+details.forgot p { margin: 8px 0; }
+
+/* Facture et impression */
+dialog.wide { width: min(54rem, calc(100vw - 24px)); }
+.invprev { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 14px; overflow-x: auto; }
+.printonly, #printzone { display: none; }
+@page { margin: 14mm; }
+@media print {
+  :root:root:root {
+    --bg: #fff; --surface: #fff; --field: #fff; --fg: #000; --muted: #444; --line: #bbb; --accent: #000; --accent-fg: #fff; --accent-soft: #eee;
+    --warn: #000; --warn-soft: #eee; --ok: #000; --ok-soft: #fff; --chip-bg-l: 92%; --chip-fg-l: 20%;
+  }
+  body { background: #fff; color: #000; padding: 0; font-size: 12pt; }
+  .top, .tabs, .bar, .acts, .add-link, .start, dialog, #toast { display: none !important; }
+  .printonly { display: block; margin-bottom: 10px; }
+  .app { max-width: none; gap: 12px; }
+  .mission, .row, .sum, .tablewrap, .day { break-inside: avoid; }
+  body.pz #app, body.pz #auth { display: none !important; }
+  body.pz #printzone { display: block; }
+}
+
+#toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 9px 16px; border-radius: 8px; font-size: 0.92rem; opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 20; max-width: calc(100vw - 32px); }
+#toast.on { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { #toast { transition: none; } }
+</style>
+</head>
+<body>
+
+
+<div id="auth" hidden></div>
+<div id="app" class="app" hidden>
+  <header class="top">
+    <h1 id="h-name"></h1>
+    <div class="tools">
+      <button id="b-lang" class="btn small" data-act="lang" type="button"></button>
+      <button id="b-set" class="btn small" data-act="settings" type="button"></button>
+      <button id="b-out" class="btn small" data-act="logout" type="button"></button>
+    </div>
+  </header>
+  <nav class="tabs" role="tablist" id="tabs"></nav>
+  <main id="view"></main>
+</div>
+<datalist id="cities"></datalist>
+<dialog id="dlg"></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+<div id="printzone"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- Stockage (sur cet appareil) ---------- */
+  const store = (area) => ({
+    get(k) { try { return window[area].getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { window[area].setItem(k, v); return true; } catch (e) { return false; } },
+    del(k) { try { window[area].removeItem(k); } catch (e) {} }
+  });
+  const ls = store("localStorage"), ss = store("sessionStorage");
+  const K = { data: "pm_data", auth: "pm_auth", lang: "pm_lang", stay: "pm_stay", sess: "pm_ok" };
+
+  /* ---------- Traductions ---------- */
+  const arN = (n, one, two, few, many) => n === 1 ? one : n === 2 ? two : (n >= 3 && n <= 10) ? n + " " + few : n + " " + many;
+  const T = {
+    fr: {
+      appName: "Planning Ménage", tPlanning: "Planning", tHouses: "Maisons", tTeam: "Équipe", tHours: "Heures",
+      today: "Aujourd’hui", prev: "Période précédente", next: "Période suivante", add: "Ajouter", save: "Enregistrer", cancel: "Annuler", close: "Fermer", edit: "Modifier", del: "Supprimer",
+      confirmDel: "Confirmer : supprimer", allWorkers: "Tous les employés", allCities: "Toutes les villes", noCity: "Sans ville", noteOpt: "Note (facultatif)",
+      settings: "Paramètres", logout: "Déconnexion", otherLang: "العربية",
+      startTitle: "Pour commencer", step1: "Ajoutez vos maisons, avec leur ville et leur temps de nettoyage.", step2: "Ajoutez vos employés et attribuez-leur des maisons.", step3: "Planifiez les missions. Les heures se calculent toutes seules.", goHouses: "Aller aux maisons", goTeam: "Aller à l’équipe",
+      addMission: "Ajouter une mission", sumTotal: "Total prévu", sumBase: "Temps de base", sumExtra: "Temps supplémentaire", sumDone: "Réalisé", sumMissions: "Missions", sumCheck: "À vérifier",
+      noMission: "Aucune mission.", markDone: "Terminer", isDone: "Terminé", withExtra: (b, e) => b + " + " + e + " en plus",
+      aOverlap: (n, h) => "Chevauche " + n + " (" + h + ")", aMidnight: "Se termine après minuit", aOverDay: (l, s) => "Plus de " + l + " ce jour (" + s + ")", nextDay: "+1 j",
+      goneHouse: "Maison supprimée", goneWorker: "Employé supprimé", otherMission: "une autre mission",
+      nWorkers: (n) => n + " employé" + (n > 1 ? "s" : ""),
+      nMissions: (n) => n + " mission" + (n > 1 ? "s" : ""), nHouses: (n) => n + " maison" + (n > 1 ? "s" : ""), nCities: (n) => n + " ville" + (n > 1 ? "s" : ""),
+      nSelected: (n) => n + " sélectionnée" + (n > 1 ? "s" : ""), nNotAssigned: (n) => "(" + n + " non attribuée" + (n > 1 ? "s" : "") + ")", nAssigned: (n) => n + " maison" + (n > 1 ? "s" : "") + " attribuée" + (n > 1 ? "s" : ""),
+      housesTitle: "Maisons", addHouse: "Ajouter une maison", emptyHouses: "Aucune maison pour le moment. Ajoutez la première avec sa ville, sa durée de nettoyage et, si besoin, un temps supplémentaire.", noMatch: "Aucune maison ne correspond à cette recherche.",
+      searchHouse: "Rechercher une maison, une rue, une ville", noWorkerAssigned: "Aucun employé attribué", cleaning: "Durée : ", extraPlus: (d) => "+ " + d + " supplémentaire",
+      fHouseName: "Nom de la maison ou du client", fAddress: "Adresse", fCity: "Ville", fClean: "Temps de nettoyage", hUnit: "h", minUnit: "min",
+      fExtraUsual: "Temps supplémentaire habituel (minutes, facultatif)", extraHelp: "Proposé à chaque nouvelle mission. Les missions déjà planifiées gardent leur durée.", fAssigned: "Employés attribués",
+      newHouse: "Nouvelle maison", editHouse: "Modifier la maison", saveAgain: "Enregistrer et ajouter une autre",
+      teamTitle: "Équipe", addWorker: "Ajouter un employé", emptyTeam: "Aucun employé. Ajoutez le premier, puis choisissez les maisons dont il s’occupe.", thisWeek: "Cette semaine : ", editWorkerBtn: "Modifier", showHouses: "Voir les maisons", tour: (d) => d + " pour un tour complet",
+      newWorker: "Nouvel employé", editWorker: "Modifier l’employé", fName: "Nom", fAssignedHouses: "Maisons attribuées", searchChk: "Rechercher une maison, une rue, une ville", checkAll: "Tout cocher", addHousesFirst: "Ajoutez d’abord des maisons dans l’onglet Maisons, puis revenez les attribuer.",
+      newMission: "Nouvelle mission", editMission: "Modifier la mission", fWorker: "Employé", fHouse: "Maison", showAll: "Afficher toutes les maisons", fDate: "Date", fStart: "Heure de début", fCleanMin: "Temps de nettoyage (min)", fExtraMin: "Temps supplémentaire (min)", addLabel: "Ajouter :", noneBtn: "Aucun",
+      fRepeat: "Répéter chaque semaine", repeatHint: "semaine(s) au total, 1 = pas de répétition", pChoose: "Choisissez une maison, une heure de début et un temps de nettoyage.", pDuration: "Durée : ", pRange: (a, b) => "De " + a + " à " + b, pOverDay: (d) => d + " de travail ce jour pour cet employé",
+      eHouseName: "Donnez un nom à la maison.", eDur: "Le temps de nettoyage doit être supérieur à 0.", eWorkerName: "Donnez un nom à l’employé.", eMission: "Renseignez l’employé, la maison, la date et l’heure de début.",
+      toastAddedM: "Mission ajoutée", toastUpdM: "Mission modifiée", toastDelM: "Mission supprimée", toastHouse: "Maison enregistrée", toastHouseNext: "Maison enregistrée. Ajoutez la suivante.", toastHouseDel: "Maison supprimée", toastWorker: "Employé enregistré", toastWorkerDel: "Employé supprimé", toastAddFirst: "Ajoutez d’abord une maison et un employé", toastSaveFail: "Enregistrement impossible sur cet appareil",
+      week: "Semaine", month: "Mois", period: "Période", exportCsv: "Exporter en CSV", addWorkersToSee: "Ajoutez des employés pour voir leurs heures.",
+      cEmployee: "Employé", cMissions: "Missions", cBase: "Base", cExtra: "Suppl.", cTotal: "Total prévu", cDone: "Réalisé", cDate: "Date", cSchedule: "Horaire", cHouse: "Maison", cCity: "Ville", cDuration: "Durée", cState: "État", total: "Total", planned: "Prévu",
+      hoursHint: "Total prévu = temps de base de chaque maison + temps supplémentaire. Réalisé = missions terminées. La durée est enregistrée avec chaque mission : modifier une maison plus tard ne change pas les heures déjà planifiées.",
+      setTitle: "Paramètres", backup: "Sauvegarde", backupHint: "Les données sont enregistrées sur cet appareil. Téléchargez une sauvegarde régulièrement et avant de changer d’appareil.", exportBackup: "Télécharger une sauvegarde", importBackup: "Restaurer une sauvegarde",
+      importSummary: (h, w, m) => "Fichier lu : " + h + ", " + w + ", " + m + ".", importReplace: "Remplacer mes données", importConfirm: "Confirmer : remplacer", importErr: "Ce fichier n’est pas une sauvegarde valide.", importDone: "Données restaurées", backupSaved: "Sauvegarde téléchargée",
+      changePwd: "Changer le mot de passe", curPwd: "Mot de passe actuel", newPwd: "Nouveau mot de passe", confirmPwd: "Confirmer le mot de passe", pwdChanged: "Mot de passe modifié", ePwdWrong: "Le mot de passe actuel est incorrect.",
+      loginTitle: "Connexion", setupTitle: "Créer votre compte", setupHint: "Choisissez un nom d’utilisateur et un mot de passe. Ils seront demandés à chaque ouverture.", username: "Nom d’utilisateur", password: "Mot de passe", loginBtn: "Se connecter", createBtn: "Créer le compte", stay: "Rester connecté sur cet appareil",
+      eBadLogin: "Nom d’utilisateur ou mot de passe incorrect.", eShort: "Le mot de passe doit contenir au moins 6 caractères.", eMismatch: "Les mots de passe ne correspondent pas.", eUser: "Entrez un nom d’utilisateur.", eWait: (s) => "Trop d’essais. Réessayez dans " + s + " s.",
+      forgot: "Mot de passe oublié ?", forgotText: "Il ne peut pas être récupéré. Vous pouvez réinitialiser l’application : toutes les données de cet appareil seront effacées. Si vous avez une sauvegarde, vous pourrez la restaurer ensuite.", resetBtn: "Tout réinitialiser", resetConfirm: "Confirmer : tout effacer",
+      noCrypto: "Ce navigateur ne permet pas la connexion sécurisée. Utilisez une version récente de Chrome, Safari ou Firefox.",
+      doPrint: "Imprimer", doXlsx: "Excel", printTitleHours: "Heures", printTitlePlan: "Planning", fileSaved: "Fichier téléchargé",
+      invoiceBtn: "Facture", invTitle: "Facture", fClient: "Client (maison)", fFrom: "Du", fTo: "Au", fInclude: "Missions incluses", incDone: "Terminées seulement", incAll: "Toutes les missions", fNumber: "Numéro de facture", fInvDate: "Date de facture", fRate: "Tarif horaire (€/h)", fVat: "TVA (%)",
+      btnPrint: "Imprimer / PDF", btnHtml: "Télécharger (HTML)", btnXlsx: "Télécharger (Excel)",
+      invTo: "Facturé à", invNo: "N°", invDate: "Date", invDue: "Échéance", invPeriod: "Période", invDesc: "Description", invDuration: "Durée", invRate: "Tarif/h", invAmount: "Montant", invSubtotal: "Total HT", invVat: (p) => "TVA " + p + " %", invTotal: "Total TTC",
+      invPay: "À régler par virement", invVatNo: "N° TVA / entreprise", invClean: "Nettoyage", invNone: "Aucune mission à facturer sur cette période.", invNoRate: "Indiquez un tarif horaire pour calculer les montants.", invSkipped: (n) => n + " mission" + (n > 1 ? "s" : "") + " non terminée" + (n > 1 ? "s" : "") + " ignorée" + (n > 1 ? "s" : "") + ".", invThanks: "Merci pour votre confiance.",
+      fTarif: "Tarif horaire (€/h, facultatif)", tarifHelp: "Utilisé pour les factures. Sinon, le tarif par défaut des paramètres est utilisé.",
+      coTitle: "Mon entreprise et facturation", coName: "Nom de l’entreprise", coAddr: "Adresse", coPhone: "Téléphone", coMail: "E-mail", coVat: "N° TVA / entreprise", coIban: "IBAN", defRate: "Tarif horaire par défaut (€/h)", defVat: "TVA par défaut (%)", payDays: "Délai de paiement (jours)", nextNo: "Prochain numéro de facture", coSaved: "Paramètres enregistrés", exportAll: "Tout exporter en Excel",
+      shSummary: "Résumé", shMissions: "Missions", shHouses: "Maisons", shTeam: "Employés", shByService: "Par service",
+      xHours: ["Employé", "Missions", "Base (h)", "Suppl. (h)", "Total (h)", "Réalisé (h)"], xHouses: ["Nom", "Adresse", "Ville", "Service principal", "Durée (min)", "Suppl. habituel (min)", "Tarif (€/h)", "Autres services (min)", "Employés attribués", "Note"], xTeam: ["Employé", "Nombre de maisons", "Maisons"],
+      xMis: ["Date", "Maison", "Ville", "Service", "Début", "Fin", "Base (h)", "Suppl. (h)", "Total (h)", "État", "Adresse", "Note"], xHouseRecap: ["Maison", "Ville", "Passages", "Base (h)", "Suppl. (h)", "Total (h)"], xSvcRecap: ["Service", "Passages", "Base (h)", "Suppl. (h)", "Total (h)"], xSvc: ["Employé", "Service", "Missions", "Base (h)", "Suppl. (h)", "Total (h)"],
+      xTitleDetail: "Détail des missions", xTitleHouses: "Récapitulatif par maison", xTitleSvc: "Récapitulatif par service", xPeriod: "Période",
+      csvHead: ["Date", "Début", "Fin", "Employé", "Maison", "Adresse", "Ville", "Service", "Base (min)", "Suppl. (min)", "Total (min)", "Total (h)", "État", "Note"], uh: "h", umin: "min",
+      sv_menage: "Ménage", sv_vitres: "Vitres", sv_repassage: "Repassage", sv_cuisine: "Cuisine et four", sv_fin_bail: "Fin de bail", sv_apres_travaux: "Après travaux", sv_tapis: "Tapis et moquettes", sv_exterieur: "Jardin et terrasse", sv_bureaux: "Bureaux", sv_communs: "Parties communes", sv_desinfection: "Désinfection",
+      fService: "Service", fMainService: "Service principal", svTimes: "Temps pour les autres services (minutes, facultatif)", svTimesHelp: "Exemple : vitres 60 min pour cette maison. Ce temps est proposé quand vous choisissez ce service dans une mission.",
+      svTitle: "Services", svHint: "Types de travaux proposés pour les maisons et les missions (ménage, vitres…). Vous pouvez renommer, ajouter ou supprimer.", svName: "Nom du service", svNew: "Nouveau service (nom)", svRestore: "Rétablir les services standard", svDeleted: "Service supprimé", svSaved: "Services enregistrés", sumByService: "Heures par service"
+    },
+    ar: {
+      appName: "جدول التنظيف", tPlanning: "الجدول", tHouses: "المنازل", tTeam: "العمال", tHours: "الساعات",
+      today: "اليوم", prev: "الفترة السابقة", next: "الفترة التالية", add: "إضافة", save: "حفظ", cancel: "إلغاء", close: "إغلاق", edit: "تعديل", del: "حذف",
+      confirmDel: "تأكيد الحذف", allWorkers: "كل العمال", allCities: "كل المدن", noCity: "بدون مدينة", noteOpt: "ملاحظة (اختياري)",
+      settings: "الإعدادات", logout: "تسجيل الخروج", otherLang: "Français",
+      startTitle: "للبدء", step1: "أضف منازلك مع المدينة ووقت التنظيف.", step2: "أضف عمالك وأسند إليهم المنازل.", step3: "جدول المهام. تُحسب الساعات تلقائيًا.", goHouses: "إلى المنازل", goTeam: "إلى العمال",
+      addMission: "إضافة مهمة", sumTotal: "المجموع المخطط", sumBase: "الوقت الأساسي", sumExtra: "الوقت الإضافي", sumDone: "المنجز", sumMissions: "المهام", sumCheck: "للمراجعة",
+      noMission: "لا توجد مهام.", markDone: "إنهاء", isDone: "منجزة", withExtra: (b, e) => b + " + " + e + " إضافية",
+      aOverlap: (n, h) => "يتداخل مع " + n + " (" + h + ")", aMidnight: "ينتهي بعد منتصف الليل", aOverDay: (l, s) => "أكثر من " + l + " في هذا اليوم (" + s + ")", nextDay: "+1 يوم",
+      goneHouse: "منزل محذوف", goneWorker: "عامل محذوف", otherMission: "مهمة أخرى",
+      nWorkers: (n) => n === 0 ? "لا عمال" : arN(n, "عامل واحد", "عاملان", "عمال", "عاملًا"),
+      nMissions: (n) => n === 0 ? "لا مهام" : arN(n, "مهمة واحدة", "مهمتان", "مهام", "مهمة"), nHouses: (n) => n === 0 ? "لا منازل" : arN(n, "منزل واحد", "منزلان", "منازل", "منزلًا"), nCities: (n) => arN(n, "مدينة واحدة", "مدينتان", "مدن", "مدينة"),
+      nSelected: (n) => n + " محدد", nNotAssigned: (n) => "(" + n + " غير مُسنَد)", nAssigned: (n) => n === 0 ? "لا منازل مُسندة" : arN(n, "منزل واحد مُسنَد", "منزلان مُسندان", "منازل مُسندة", "منزلًا مُسندًا"),
+      housesTitle: "المنازل", addHouse: "إضافة منزل", emptyHouses: "لا توجد منازل بعد. أضف أول منزل مع مدينته ووقت تنظيفه، وعند الحاجة وقتًا إضافيًا.", noMatch: "لا يوجد منزل مطابق للبحث.",
+      searchHouse: "ابحث عن منزل أو شارع أو مدينة", noWorkerAssigned: "لم يُسند لأي عامل", cleaning: "المدة: ", extraPlus: (d) => "+ " + d + " إضافية",
+      fHouseName: "اسم المنزل أو الزبون", fAddress: "العنوان", fCity: "المدينة", fClean: "وقت التنظيف", hUnit: "س", minUnit: "د",
+      fExtraUsual: "الوقت الإضافي المعتاد (دقائق، اختياري)", extraHelp: "يُقترح عند كل مهمة جديدة. المهام المجدولة سابقًا تحتفظ بمدتها.", fAssigned: "العمال المُسنَد إليهم",
+      newHouse: "منزل جديد", editHouse: "تعديل المنزل", saveAgain: "حفظ وإضافة منزل آخر",
+      teamTitle: "العمال", addWorker: "إضافة عامل", emptyTeam: "لا يوجد عمال. أضف أول عامل ثم اختر المنازل التي يتولاها.", thisWeek: "هذا الأسبوع: ", editWorkerBtn: "تعديل", showHouses: "عرض المنازل", tour: (d) => d + " لجولة كاملة",
+      newWorker: "عامل جديد", editWorker: "تعديل العامل", fName: "الاسم", fAssignedHouses: "المنازل المُسندة", searchChk: "ابحث عن منزل أو شارع أو مدينة", checkAll: "تحديد الكل", addHousesFirst: "أضف المنازل أولًا من تبويب المنازل ثم عُد لإسنادها.",
+      newMission: "مهمة جديدة", editMission: "تعديل المهمة", fWorker: "العامل", fHouse: "المنزل", showAll: "إظهار كل المنازل", fDate: "التاريخ", fStart: "ساعة البدء", fCleanMin: "وقت التنظيف (د)", fExtraMin: "الوقت الإضافي (د)", addLabel: "أضِف:", noneBtn: "بدون",
+      fRepeat: "تكرار كل أسبوع", repeatHint: "أسبوع في المجموع (1 = بدون تكرار)", pChoose: "اختر منزلًا وساعة بدء ووقت تنظيف.", pDuration: "المدة: ", pRange: (a, b) => "من " + a + " إلى " + b, pOverDay: (d) => d + " عمل في هذا اليوم لهذا العامل",
+      eHouseName: "أدخل اسم المنزل.", eDur: "يجب أن يكون وقت التنظيف أكبر من 0.", eWorkerName: "أدخل اسم العامل.", eMission: "أدخل العامل والمنزل والتاريخ وساعة البدء.",
+      toastAddedM: "تمت إضافة المهمة", toastUpdM: "تم تعديل المهمة", toastDelM: "تم حذف المهمة", toastHouse: "تم حفظ المنزل", toastHouseNext: "تم حفظ المنزل. أضف المنزل التالي.", toastHouseDel: "تم حذف المنزل", toastWorker: "تم حفظ العامل", toastWorkerDel: "تم حذف العامل", toastAddFirst: "أضف أولًا منزلًا وعاملًا", toastSaveFail: "تعذّر الحفظ على هذا الجهاز",
+      week: "أسبوع", month: "شهر", period: "الفترة", exportCsv: "تصدير CSV", addWorkersToSee: "أضف عمالًا لعرض ساعاتهم.",
+      cEmployee: "العامل", cMissions: "المهام", cBase: "الأساسي", cExtra: "إضافي", cTotal: "المجموع المخطط", cDone: "المنجز", cDate: "التاريخ", cSchedule: "الوقت", cHouse: "المنزل", cCity: "المدينة", cDuration: "المدة", cState: "الحالة", total: "المجموع", planned: "مخططة",
+      hoursHint: "المجموع المخطط = وقت التنظيف الأساسي لكل منزل + الوقت الإضافي. المنجز = المهام المنتهية. تُحفظ المدة مع كل مهمة، لذلك تعديل منزل لاحقًا لا يغيّر الساعات المجدولة سابقًا.",
+      setTitle: "الإعدادات", backup: "النسخ الاحتياطي", backupHint: "البيانات محفوظة على هذا الجهاز. نزّل نسخة احتياطية بانتظام وقبل تغيير الجهاز.", exportBackup: "تنزيل نسخة احتياطية", importBackup: "استعادة نسخة احتياطية",
+      importSummary: (h, w, m) => "تمت قراءة الملف: " + h + "، " + w + "، " + m + ".", importReplace: "استبدال بياناتي", importConfirm: "تأكيد الاستبدال", importErr: "هذا الملف ليس نسخة احتياطية صالحة.", importDone: "تمت استعادة البيانات", backupSaved: "تم تنزيل النسخة الاحتياطية",
+      changePwd: "تغيير كلمة المرور", curPwd: "كلمة المرور الحالية", newPwd: "كلمة المرور الجديدة", confirmPwd: "تأكيد كلمة المرور", pwdChanged: "تم تغيير كلمة المرور", ePwdWrong: "كلمة المرور الحالية غير صحيحة.",
+      loginTitle: "تسجيل الدخول", setupTitle: "إنشاء حسابك", setupHint: "اختر اسم مستخدم وكلمة مرور. ستُطلبان عند كل فتح.", username: "اسم المستخدم", password: "كلمة المرور", loginBtn: "دخول", createBtn: "إنشاء الحساب", stay: "البقاء متصلًا على هذا الجهاز",
+      eBadLogin: "اسم المستخدم أو كلمة المرور غير صحيحة.", eShort: "يجب أن تحتوي كلمة المرور على 6 أحرف على الأقل.", eMismatch: "كلمتا المرور غير متطابقتين.", eUser: "أدخل اسم المستخدم.", eWait: (s) => "محاولات كثيرة. أعد المحاولة بعد " + s + " ثانية.",
+      forgot: "نسيت كلمة المرور؟", forgotText: "لا يمكن استرجاعها. يمكنك إعادة ضبط التطبيق، وسيؤدي ذلك إلى مسح كل بيانات هذا الجهاز. إذا كانت لديك نسخة احتياطية يمكنك استعادتها بعد ذلك.", resetBtn: "إعادة ضبط كل شيء", resetConfirm: "تأكيد: مسح كل شيء",
+      noCrypto: "هذا المتصفح لا يدعم الدخول الآمن. استخدم نسخة حديثة من Chrome أو Safari أو Firefox.",
+      doPrint: "طباعة", doXlsx: "Excel", printTitleHours: "الساعات", printTitlePlan: "الجدول", fileSaved: "تم تنزيل الملف",
+      invoiceBtn: "فاتورة", invTitle: "فاتورة", fClient: "الزبون (المنزل)", fFrom: "من", fTo: "إلى", fInclude: "المهام المشمولة", incDone: "المنجزة فقط", incAll: "كل المهام", fNumber: "رقم الفاتورة", fInvDate: "تاريخ الفاتورة", fRate: "السعر بالساعة (€)", fVat: "الضريبة (%)",
+      btnPrint: "طباعة / PDF", btnHtml: "تنزيل (HTML)", btnXlsx: "تنزيل (Excel)",
+      invTo: "فاتورة إلى", invNo: "رقم", invDate: "التاريخ", invDue: "الاستحقاق", invPeriod: "الفترة", invDesc: "الوصف", invDuration: "المدة", invRate: "السعر/س", invAmount: "المبلغ", invSubtotal: "المجموع قبل الضريبة", invVat: (p) => "الضريبة " + p + "%", invTotal: "المجموع شامل الضريبة",
+      invPay: "الدفع بالتحويل البنكي", invVatNo: "رقم الضريبة / المؤسسة", invClean: "تنظيف", invNone: "لا توجد مهام للفوترة في هذه الفترة.", invNoRate: "أدخل السعر بالساعة لحساب المبالغ.", invSkipped: (n) => n + " مهمة غير منتهية لم تُحتسب.", invThanks: "شكرًا لثقتكم.",
+      fTarif: "السعر بالساعة (€، اختياري)", tarifHelp: "يُستعمل في الفواتير. وإلا يُستعمل السعر الافتراضي من الإعدادات.",
+      coTitle: "مؤسستي والفوترة", coName: "اسم المؤسسة", coAddr: "العنوان", coPhone: "الهاتف", coMail: "البريد الإلكتروني", coVat: "رقم الضريبة / المؤسسة", coIban: "IBAN", defRate: "السعر الافتراضي بالساعة (€)", defVat: "الضريبة الافتراضية (%)", payDays: "مهلة الدفع (أيام)", nextNo: "رقم الفاتورة التالي", coSaved: "تم حفظ الإعدادات", exportAll: "تصدير كل شيء إلى Excel",
+      shSummary: "ملخص", shMissions: "المهام", shHouses: "المنازل", shTeam: "العمال", shByService: "حسب الخدمة",
+      xHours: ["العامل", "المهام", "الأساسي (س)", "إضافي (س)", "المجموع (س)", "المنجز (س)"], xHouses: ["الاسم", "العنوان", "المدينة", "الخدمة الرئيسية", "المدة (د)", "الإضافي المعتاد (د)", "السعر (€/س)", "خدمات أخرى (د)", "العمال المُسنَد إليهم", "ملاحظة"], xTeam: ["العامل", "عدد المنازل", "المنازل"],
+      xMis: ["التاريخ", "المنزل", "المدينة", "الخدمة", "البدء", "الانتهاء", "الأساسي (س)", "إضافي (س)", "المجموع (س)", "الحالة", "العنوان", "ملاحظة"], xHouseRecap: ["المنزل", "المدينة", "عدد المرات", "الأساسي (س)", "إضافي (س)", "المجموع (س)"], xSvcRecap: ["الخدمة", "عدد المرات", "الأساسي (س)", "إضافي (س)", "المجموع (س)"], xSvc: ["العامل", "الخدمة", "المهام", "الأساسي (س)", "إضافي (س)", "المجموع (س)"],
+      xTitleDetail: "تفاصيل المهام", xTitleHouses: "ملخص حسب المنزل", xTitleSvc: "ملخص حسب الخدمة", xPeriod: "الفترة",
+      csvHead: ["التاريخ", "البدء", "الانتهاء", "العامل", "المنزل", "العنوان", "المدينة", "الخدمة", "الأساسي (د)", "إضافي (د)", "المجموع (د)", "المجموع (س)", "الحالة", "ملاحظة"], uh: "س", umin: "د",
+      sv_menage: "تنظيف المنزل", sv_vitres: "تنظيف الزجاج", sv_repassage: "الكي", sv_cuisine: "المطبخ والفرن", sv_fin_bail: "تنظيف نهاية الإيجار", sv_apres_travaux: "تنظيف بعد الأشغال", sv_tapis: "السجاد والموكيت", sv_exterieur: "الحديقة والتراس", sv_bureaux: "المكاتب", sv_communs: "الأجزاء المشتركة", sv_desinfection: "التعقيم",
+      fService: "الخدمة", fMainService: "الخدمة الرئيسية", svTimes: "وقت الخدمات الأخرى (دقائق، اختياري)", svTimesHelp: "مثال: تنظيف الزجاج 60 دقيقة لهذا المنزل. يُقترح هذا الوقت عند اختيار الخدمة في المهمة.",
+      svTitle: "الخدمات", svHint: "أنواع الأعمال المتاحة للمنازل والمهام (تنظيف، زجاج…). يمكنك إعادة التسمية أو الإضافة أو الحذف.", svName: "اسم الخدمة", svNew: "خدمة جديدة (الاسم)", svRestore: "استرجاع الخدمات الأساسية", svDeleted: "خدمة محذوفة", svSaved: "تم حفظ الخدمات", sumByService: "الساعات حسب الخدمة"
+    }
+  };
+  let lang = ls.get(K.lang) === "ar" ? "ar" : "fr";
+  function t(k) {
+    let v = T[lang][k]; if (v == null) v = T.fr[k]; if (v == null) return k;
+    if (typeof v === "function") return v.apply(null, Array.prototype.slice.call(arguments, 1));
+    return v;
+  }
+  let F = {};
+  function makeFormatters() {
+    const loc = lang === "ar" ? "ar-u-ca-gregory-nu-latn" : "fr-BE";
+    F.day = new Intl.DateTimeFormat(loc, { weekday: "long", day: "numeric", month: "long" });
+    F.short = new Intl.DateTimeFormat(loc, { day: "numeric", month: "short" });
+    F.month = new Intl.DateTimeFormat(loc, { month: "long", year: "numeric" });
+    F.row = new Intl.DateTimeFormat(loc, { weekday: "short", day: "numeric", month: "short" });
+    F.coll = new Intl.Collator(lang === "ar" ? "ar" : "fr", { sensitivity: "base", numeric: true });
+  }
+
+  /* ---------- Outils ---------- */
+  const $ = (s, r) => (r || document).querySelector(s);
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const u = (s) => "<bdi>" + esc(s) + "</bdi>";
+  const num = (s) => '<span class="num">' + s + "</span>";
+  const uid = () => Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4);
+  const pad = (n) => String(n).padStart(2, "0");
+  const iso = (d) => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+  const parse = (s) => { const p = s.split("-").map(Number); return new Date(p[0], p[1] - 1, p[2]); };
+  const addDays = (d, n) => { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() + n); return x; };
+  const monday = (d) => { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x; };
+  const today = () => new Date();
+  const toMin = (s) => { const p = String(s || "0:0").split(":").map(Number); return (p[0] || 0) * 60 + (p[1] || 0); };
+  const toHM = (m) => pad(Math.floor(m / 60)) + ":" + pad(m % 60);
+  const int = (v) => Math.max(0, Math.round(Number(v) || 0));
+  const dec = (m) => (m / 60).toFixed(2).replace(".", ",");
+  function dur(m) {
+    m = Math.round(m);
+    if (m < 60) return m + " " + t("umin");
+    return Math.floor(m / 60) + " " + t("uh") + (m % 60 ? " " + pad(m % 60) : "");
+  }
+  const durH = (m) => num(dur(m));
+  const endLabel = (e) => e >= 1440 ? toHM(e - 1440) + " (" + t("nextDay") + ")" : toHM(e);
+  const IC = {
+    prev: '<svg class="ic-dir" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.5 4.5 7 10l5.5 5.5"/></svg>',
+    next: '<svg class="ic-dir" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.5 4.5 13 10l-5.5 5.5"/></svg>',
+    plus: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M10 4v12M4 10h12"/></svg>',
+    check: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 10.5 3.6 3.6 7.4-8"/></svg>',
+    down: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3v10m-4-3.5 4 4 4-4M4 16.5h12"/></svg>'
+  };
+  const DAY_LIMIT = 540; // alerte au-delà de 9 h de travail par jour
+  const HUES = [200, 150, 28, 285, 350, 55, 175, 320];
+
+  /* ---------- Données ---------- */
+  const DEFAULT_SV = ["menage", "vitres", "repassage", "cuisine", "fin_bail", "apres_travaux", "tapis", "exterieur", "bureaux", "communs", "desinfection"];
+  const defaultServices = () => DEFAULT_SV.map((id) => ({ id: id, nom: "" }));
+  let state = { v: 3, workers: [], houses: [], missions: [], services: defaultServices(), settings: normSettings() };
+  const ui = { tab: "planning", weekStart: iso(monday(today())), worker: "", hPeriod: "week", hAnchor: iso(today()), q: "", city: "" };
+  try { const h = location.hash.replace("#", ""); if (["planning", "maisons", "equipe", "heures"].indexOf(h) >= 0) ui.tab = h; } catch (e) {}
+
+  const houseOf = (id) => state.houses.find((h) => h.id === id);
+  const workerOf = (id) => state.workers.find((w) => w.id === id);
+  const hueOf = (id) => { const i = state.workers.findIndex((w) => w.id === id); return HUES[(i < 0 ? 0 : i) % HUES.length]; };
+  const chip = (w) => '<span class="chip" style="--h:' + (w ? hueOf(w.id) : 0) + '">' + (w ? u(w.nom) : esc(t("goneWorker"))) + "</span>";
+  const placeLine = (h) => h ? [h.adresse, h.ville].filter(Boolean).join(", ") : "";
+
+  function normSettings(x) {
+    x = x || {};
+    const txt = (v) => String(v == null ? "" : v);
+    return {
+      nom: txt(x.nom), adresse: txt(x.adresse), tel: txt(x.tel), mail: txt(x.mail), tva: txt(x.tva), iban: txt(x.iban),
+      tarif: Math.max(0, Number(x.tarif) || 0), taux: x.taux == null || x.taux === "" ? 21 : Math.max(0, Number(x.taux) || 0),
+      jours: x.jours == null || x.jours === "" ? 30 : int(x.jours), prochain: Math.max(1, int(x.prochain) || 1)
+    };
+  }
+  function normalize(s) {
+    const o = { v: 3, workers: [], houses: [], missions: [], services: [], settings: normSettings(s.settings) };
+    const seen = {};
+    if (Array.isArray(s.services)) s.services.forEach((x) => { const id = String((x && x.id) || ""); if (id && !seen[id]) { seen[id] = 1; o.services.push({ id: id, nom: String((x && x.nom) || "") }); } });
+    if (!o.services.length) o.services = defaultServices();
+    const durees = (d) => { const r = {}; if (d && typeof d === "object") Object.keys(d).forEach((k) => { const v = int(d[k]); if (v > 0) r[k] = v; }); return r; };
+    (s.houses || []).forEach((h) => o.houses.push({ id: String(h.id || uid()), nom: String(h.nom || ""), adresse: String(h.adresse || ""), ville: String(h.ville || ""), service: String(h.service || "menage"), duree: int(h.duree), extra: int(h.extra), durees: durees(h.durees), tarif: Math.max(0, Number(h.tarif) || 0), note: String(h.note || "") }));
+    (s.workers || []).forEach((w) => o.workers.push({ id: String(w.id || uid()), nom: String(w.nom || ""), maisons: Array.isArray(w.maisons) ? w.maisons.map(String) : [] }));
+    (s.missions || []).forEach((m) => {
+      const h = o.houses.find((x) => x.id === m.houseId);
+      o.missions.push({ id: String(m.id || uid()), date: String(m.date || ""), houseId: String(m.houseId || ""), workerId: String(m.workerId || ""), service: String(m.service || (h && h.service) || "menage"), debut: String(m.debut || "08:00"), duree: typeof m.duree === "number" ? int(m.duree) : (h ? h.duree : 0), extra: int(m.extra), note: String(m.note || ""), done: !!m.done });
+    });
+    return o;
+  }
+  function loadData() {
+    try { const raw = ls.get(K.data); state = raw ? normalize(JSON.parse(raw)) : normalize({}); } catch (e) { state = normalize({}); }
+  }
+  function save() { if (!ls.set(K.data, JSON.stringify(state))) toast(t("toastSaveFail")); }
+
+  const svOf = (id) => state.services.find((s) => s.id === id);
+  const svName = (id) => { const s = svOf(id); if (!s) return id ? t("svDeleted") : "—"; return s.nom || (DEFAULT_SV.indexOf(s.id) >= 0 ? t("sv_" + s.id) : s.id); };
+  const svTag = (id) => '<span class="svc">' + u(svName(id)) + "</span>";
+  const svOptions = (sel) => (sel && !svOf(sel) ? '<option value="' + esc(sel) + '" selected>' + esc(t("svDeleted")) + "</option>" : "") + state.services.map((s) => '<option value="' + esc(s.id) + '"' + (s.id === sel ? " selected" : "") + ">" + esc(svName(s.id)) + "</option>").join("");
+  const defaultService = () => (svOf("menage") ? "menage" : (state.services[0] || {}).id || "menage");
+  function svGroups(ms) {
+    const g = {};
+    ms.forEach((m) => { const i = info(m), r = (g[m.service] = g[m.service] || { id: m.service, n: 0, b: 0, e: 0 }); r.n++; r.b += i.base; r.e += i.extra; });
+    const idx = (id) => { const k = state.services.findIndex((s) => s.id === id); return k < 0 ? 999 : k; };
+    return Object.keys(g).map((k) => g[k]).sort((a, b) => idx(a.id) - idx(b.id));
+  }
+  function info(m) {
+    const h = houseOf(m.houseId), w = workerOf(m.workerId);
+    const base = m.duree, extra = m.extra || 0, s = toMin(m.debut);
+    return { h: h, w: w, base: base, extra: extra, total: base + extra, s: s, e: s + base + extra };
+  }
+  function groupByCity(list) {
+    const g = {};
+    list.forEach((h) => { const k = h.ville || ""; (g[k] = g[k] || []).push(h); });
+    return Object.keys(g).sort((a, b) => a === "" ? 1 : b === "" ? -1 : F.coll.compare(a, b)).map((k) => ({ city: k, label: k || t("noCity"), items: g[k].sort((a, b) => F.coll.compare(a.nom, b.nom)) }));
+  }
+  function computeAlerts() {
+    const al = {}, groups = {};
+    const add = (id, msg) => { (al[id] = al[id] || []).push(msg); };
+    state.missions.forEach((m) => { const k = m.date + "|" + m.workerId; (groups[k] = groups[k] || []).push(m); });
+    Object.keys(groups).forEach((k) => {
+      const arr = groups[k].map((m) => ({ m: m, i: info(m) })).sort((a, b) => a.i.s - b.i.s);
+      let sum = 0;
+      arr.forEach((a, ia) => {
+        sum += a.i.total;
+        if (a.i.e > 1440) add(a.m.id, t("aMidnight"));
+        for (let ib = ia + 1; ib < arr.length; ib++) {
+          const b = arr[ib];
+          if (b.i.s >= a.i.e) break;
+          add(a.m.id, t("aOverlap", b.i.h ? b.i.h.nom : t("otherMission"), toHM(b.i.s)));
+          add(b.m.id, t("aOverlap", a.i.h ? a.i.h.nom : t("otherMission"), toHM(a.i.s)));
+        }
+      });
+      if (sum > DAY_LIMIT) arr.forEach((a) => add(a.m.id, t("aOverDay", dur(DAY_LIMIT), dur(sum))));
+    });
+    return al;
+  }
+
+  /* ---------- Connexion ---------- */
+  const hasCrypto = !!(window.crypto && window.crypto.subtle);
+  const b64e = (u8) => btoa(String.fromCharCode.apply(null, Array.from(u8)));
+  const b64d = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+  async function derive(pwd, salt, iter) {
+    const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(pwd), "PBKDF2", false, ["deriveBits"]);
+    const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", salt: b64d(salt), iterations: iter, hash: "SHA-256" }, key, 256);
+    return b64e(new Uint8Array(bits));
+  }
+  const readAuth = () => { try { const a = JSON.parse(ls.get(K.auth) || "null"); return a && a.hash ? a : null; } catch (e) { return null; } };
+  let fails = 0, lockUntil = 0;
+
+  function langBtn() { return '<button class="btn small" type="button" data-act="lang" lang="' + (lang === "ar" ? "fr" : "ar") + '">' + esc(t("otherLang")) + "</button>"; }
+  function authView(mode) {
+    const setup = mode === "setup";
+    return '<div class="authbox"><div class="langrow">' + langBtn() + "</div><h1>" + esc(t("appName")) + "</h1>" +
+      '<form class="card form" data-form="' + mode + '" novalidate><h2>' + esc(setup ? t("setupTitle") : t("loginTitle")) + "</h2>" +
+      (setup ? '<p class="hint">' + esc(t("setupHint")) + "</p>" : "") +
+      (hasCrypto ? "" : '<p class="err">' + esc(t("noCrypto")) + "</p>") +
+      '<div class="fld"><label for="a-user">' + esc(t("username")) + '</label><input id="a-user" name="user" type="text" autocomplete="username" autocapitalize="none" spellcheck="false"></div>' +
+      '<div class="fld"><label for="a-pass">' + esc(t("password")) + '</label><input id="a-pass" name="pass" type="password" autocomplete="' + (setup ? "new-password" : "current-password") + '"></div>' +
+      (setup ? '<div class="fld"><label for="a-pass2">' + esc(t("confirmPwd")) + '</label><input id="a-pass2" name="pass2" type="password" autocomplete="new-password"></div>'
+        : '<label class="chkrow"><input type="checkbox" name="stay"><span>' + esc(t("stay")) + "</span></label>") +
+      '<p class="err" id="a-err" hidden></p><button class="btn primary block" type="submit">' + esc(setup ? t("createBtn") : t("loginBtn")) + "</button></form>" +
+      (setup ? "" : '<details class="forgot"><summary>' + esc(t("forgot")) + "</summary><p>" + esc(t("forgotText")) + '</p><button class="btn danger small" type="button" data-act="reset-all" data-confirm="' + esc(t("resetConfirm")) + '">' + esc(t("resetBtn")) + "</button></details>") + "</div>";
+  }
+  function showAuth() {
+    $("#app").hidden = true;
+    const box = $("#auth"); box.hidden = false;
+    box.innerHTML = authView(readAuth() ? "login" : "setup");
+    const f = $("#a-user"); if (f) f.focus();
+  }
+  function authErr(msg) { const e = $("#a-err"); if (e) { e.textContent = msg; e.hidden = false; } }
+  async function doSetup(f) {
+    const fd = new FormData(f), user = String(fd.get("user") || "").trim().toLowerCase(), p1 = String(fd.get("pass") || ""), p2 = String(fd.get("pass2") || "");
+    if (!hasCrypto) { authErr(t("noCrypto")); return; }
+    if (!user) { authErr(t("eUser")); return; }
+    if (p1.length < 6) { authErr(t("eShort")); return; }
+    if (p1 !== p2) { authErr(t("eMismatch")); return; }
+    const salt = b64e(crypto.getRandomValues(new Uint8Array(16))), iter = 150000;
+    const hash = await derive(p1, salt, iter);
+    ls.set(K.auth, JSON.stringify({ user: user, salt: salt, iter: iter, hash: hash }));
+    ss.set(K.sess, "1");
+    enterApp();
+  }
+  async function doLogin(f) {
+    if (Date.now() < lockUntil) { authErr(t("eWait", Math.ceil((lockUntil - Date.now()) / 1000))); return; }
+    const fd = new FormData(f), user = String(fd.get("user") || "").trim().toLowerCase(), pass = String(fd.get("pass") || ""), a = readAuth();
+    if (!a || !hasCrypto) { authErr(t("noCrypto")); return; }
+    const hash = await derive(pass, a.salt, a.iter);
+    if (user !== a.user || hash !== a.hash) {
+      fails++;
+      if (fails >= 5) { fails = 0; lockUntil = Date.now() + 30000; authErr(t("eWait", 30)); } else authErr(t("eBadLogin"));
+      return;
+    }
+    fails = 0; ss.set(K.sess, "1");
+    if (fd.get("stay")) ls.set(K.stay, a.hash.slice(0, 16));
+    enterApp();
+  }
+  function logout() { ss.del(K.sess); ls.del(K.stay); closeDlg(); showAuth(); }
+  function enterApp() {
+    $("#auth").hidden = true; $("#app").hidden = false;
+    loadData(); renderChrome(); render();
+  }
+  function isSignedIn() {
+    const a = readAuth();
+    return !!a && (ss.get(K.sess) === "1" || ls.get(K.stay) === a.hash.slice(0, 16));
+  }
+
+  /* ---------- Vues ---------- */
+  function renderChrome() {
+    document.documentElement.lang = lang; document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+    document.title = t("appName");
+    $("#h-name").textContent = t("appName");
+    const b = $("#b-lang"); b.textContent = t("otherLang"); b.lang = lang === "ar" ? "fr" : "ar";
+    $("#b-set").textContent = t("settings"); $("#b-out").textContent = t("logout");
+    const tabs = [["planning", "tPlanning"], ["maisons", "tHouses"], ["equipe", "tTeam"], ["heures", "tHours"]];
+    $("#tabs").innerHTML = tabs.map((x) => '<button role="tab" data-tab="' + x[0] + '" aria-selected="' + (ui.tab === x[0]) + '">' + esc(t(x[1])) + "</button>").join("");
+  }
+  const nav = (p, n, td) => '<div class="grp"><button class="btn small" data-act="' + p + '" aria-label="' + esc(t("prev")) + '">' + IC.prev + '</button><button class="btn small" data-act="' + td + '">' + esc(t("today")) + '</button><button class="btn small" data-act="' + n + '" aria-label="' + esc(t("next")) + '">' + IC.next + "</button></div>";
+
+  function missionRow(m, al) {
+    const i = info(m), a = al[m.id] || [];
+    return '<li class="mission' + (m.done ? " done" : "") + '">' +
+      '<div class="when">' + num(toHM(i.s)) + '<span class="end">' + num(endLabel(i.e)) + "</span></div>" +
+      '<div class="body"><strong>' + (i.h ? u(i.h.nom) : esc(t("goneHouse"))) + "</strong>" + (placeLine(i.h) ? '<span class="sub">' + u(placeLine(i.h)) + "</span>" : "") +
+      '<div class="meta">' + chip(i.w) + svTag(m.service) + "<b>" + durH(i.total) + "</b>" + (i.extra ? '<span class="extra">' + esc(t("withExtra", dur(i.base), dur(i.extra))) + "</span>" : "") + (m.note ? '<span class="note">' + u(m.note) + "</span>" : "") + "</div>" +
+      (a.length ? '<div class="alerts">' + a.map((x) => '<span class="alert">⚠ ' + esc(x) + "</span>").join("") + "</div>" : "") + "</div>" +
+      '<div class="acts"><button class="btn small check" data-act="toggle" data-id="' + m.id + '" aria-pressed="' + (m.done ? "true" : "false") + '">' + IC.check + esc(m.done ? t("isDone") : t("markDone")) + "</button>" +
+      '<button class="btn small" data-act="edit-mission" data-id="' + m.id + '">' + esc(t("edit")) + "</button></div></li>";
+  }
+  function startCard() {
+    const s1 = state.houses.length > 0, s2 = state.workers.length > 0;
+    if (s1 && s2) return "";
+    return '<section class="card start"><h2>' + esc(t("startTitle")) + "</h2><ol>" +
+      '<li class="' + (s1 ? "ok" : "") + '"><span>1. ' + esc(t("step1")) + "</span>" + (s1 ? "" : '<button class="btn small" data-tab="maisons">' + esc(t("goHouses")) + "</button>") + "</li>" +
+      '<li class="' + (s2 ? "ok" : "") + '"><span>2. ' + esc(t("step2")) + "</span>" + (s2 ? "" : '<button class="btn small" data-tab="equipe">' + esc(t("goTeam")) + "</button>") + "</li>" +
+      "<li><span>3. " + esc(t("step3")) + "</span></li></ol></section>";
+  }
+  function viewPlanning() {
+    const ws = parse(ui.weekStart), days = [0, 1, 2, 3, 4, 5, 6].map((i) => addDays(ws, i));
+    const from = iso(days[0]), to = iso(days[6]), t0 = iso(today());
+    const al = computeAlerts();
+    const list = state.missions.filter((m) => m.date >= from && m.date <= to && (!ui.worker || m.workerId === ui.worker));
+    let base = 0, extra = 0, done = 0;
+    list.forEach((m) => { const i = info(m); base += i.base; extra += i.extra; if (m.done) done += i.total; });
+    const nAl = list.filter((m) => al[m.id]).length;
+    const wOpts = '<option value="">' + esc(t("allWorkers")) + "</option>" + state.workers.map((w) => '<option value="' + w.id + '"' + (ui.worker === w.id ? " selected" : "") + ">" + esc(w.nom) + "</option>").join("");
+    let h = '<h2 class="printonly">' + esc(t("printTitlePlan") + " — " + F.short.format(days[0]) + " – " + F.short.format(days[6]) + " " + days[6].getFullYear()) + "</h2>" + startCard();
+    h += '<div class="bar"><div class="grp">' + nav("prev-week", "next-week", "this-week") + '<span class="period">' + esc(F.short.format(days[0]) + " – " + F.short.format(days[6]) + " " + days[6].getFullYear()) + "</span></div>" +
+      '<div class="grp"><label class="sr-only" for="f-worker">' + esc(t("fWorker")) + '</label><select id="f-worker" data-change="filter-worker">' + wOpts + "</select>" +
+      '<button class="btn" data-act="print">' + esc(t("doPrint")) + '</button><button class="btn primary" data-act="new-mission">' + IC.plus + esc(t("addMission")) + "</button></div></div>";
+    h += '<div class="sum"><div><b>' + durH(base + extra) + "</b><span>" + esc(t("sumTotal")) + "</span></div><div><b>" + durH(extra) + "</b><span>" + esc(t("sumExtra")) + "</span></div><div><b>" + durH(done) + "</b><span>" + esc(t("sumDone")) + "</span></div><div><b>" + num(list.length) + "</b><span>" + esc(t("sumMissions")) + "</span></div>" +
+      (nAl ? '<div class="bad"><b>' + num(nAl) + "</b><span>" + esc(t("sumCheck")) + "</span></div>" : "") + "</div>";
+    h += '<div class="days">';
+    days.forEach((d) => {
+      const ds = iso(d);
+      const dm = list.filter((m) => m.date === ds).sort((a, b) => toMin(a.debut) - toMin(b.debut));
+      const tot = dm.reduce((s, m) => s + info(m).total, 0);
+      h += '<section class="day' + (ds === t0 ? " today" : "") + '"><div class="day-h"><h3>' + esc(F.day.format(d)) + "</h3>" + (ds === t0 ? '<span class="badge">' + esc(t("today")) + "</span>" : "") + '<span class="tot">' + (dm.length ? esc(t("nMissions", dm.length)) + " · " + durH(tot) : "") + "</span></div>";
+      h += dm.length ? '<ul class="list">' + dm.map((m) => missionRow(m, al)).join("") + "</ul>" : '<p class="empty">' + esc(t("noMission")) + '<button class="add-link" data-act="new-mission" data-date="' + ds + '">' + esc(t("add")) + "</button></p>";
+      h += "</section>";
+    });
+    return h + "</div>";
+  }
+
+  function houseListHtml() {
+    const q = ui.q.trim().toLowerCase();
+    if (!state.houses.length) return '<p class="hint">' + esc(t("emptyHouses")) + "</p>";
+    const list = state.houses.filter((h) => (!ui.city || h.ville === ui.city) && (!q || (h.nom + " " + h.adresse + " " + h.ville).toLowerCase().indexOf(q) >= 0));
+    if (!list.length) return '<p class="hint">' + esc(t("noMatch")) + "</p>";
+    return groupByCity(list).map((g) => {
+      const tot = g.items.reduce((s, h) => s + h.duree, 0);
+      return '<section class="cgroup"><div class="cgroup-h"><h3>' + u(g.label) + "</h3><span>" + esc(t("nHouses", g.items.length)) + " · " + durH(tot) + '</span></div><ul class="list">' +
+        g.items.map((x) => {
+          const who = state.workers.filter((w) => w.maisons.indexOf(x.id) >= 0);
+          return '<li class="row"><div><div class="name">' + u(x.nom) + "</div>" + (x.adresse ? '<div class="sub">' + u(x.adresse) + "</div>" : "") +
+            '<div class="facts">' + svTag(x.service) + '<span class="sub">' + esc(t("cleaning")) + durH(x.duree) + "</span>" + (x.extra ? '<span class="extra">' + esc(t("extraPlus", dur(x.extra))) + "</span>" : "") + "</div>" +
+            (Object.keys(x.durees || {}).length ? '<div class="facts">' + Object.keys(x.durees).map((k) => svTag(k) + '<span class="sub">' + durH(x.durees[k]) + "</span>").join("") + "</div>" : "") +
+            (x.note ? '<div class="note">' + u(x.note) + "</div>" : "") +
+            '<div class="who">' + (who.length ? who.map(chip).join("") : '<span class="alert">' + esc(t("noWorkerAssigned")) + "</span>") + "</div></div>" +
+            '<div class="acts"><button class="btn small" data-act="invoice" data-id="' + x.id + '">' + esc(t("invoiceBtn")) + '</button><button class="btn small" data-act="edit-house" data-id="' + x.id + '">' + esc(t("edit")) + "</button></div></li>";
+        }).join("") + "</ul></section>";
+    }).join("");
+  }
+  function viewMaisons() {
+    const cities = Array.from(new Set(state.houses.map((h) => h.ville))).sort((a, b) => a === "" ? 1 : b === "" ? -1 : F.coll.compare(a, b));
+    const cOpts = '<option value="">' + esc(t("allCities")) + "</option>" + cities.map((c) => '<option value="' + esc(c) + '"' + (ui.city === c ? " selected" : "") + ">" + esc(c || t("noCity")) + "</option>").join("");
+    return '<div class="bar"><h2>' + esc(t("housesTitle")) + ' <span class="hint">· ' + esc(t("nHouses", state.houses.length)) + (cities.length ? " · " + esc(t("nCities", cities.length)) : "") + '</span></h2><button class="btn primary" data-act="new-house">' + IC.plus + esc(t("addHouse")) + "</button></div>" +
+      (state.houses.length ? '<div class="bar"><div class="grp"><label class="sr-only" for="f-search">' + esc(t("searchHouse")) + '</label><input id="f-search" type="search" placeholder="' + esc(t("searchHouse")) + '" value="' + esc(ui.q) + '"><label class="sr-only" for="f-city">' + esc(t("fCity")) + '</label><select id="f-city">' + cOpts + "</select></div></div>" : "") +
+      '<div id="house-list" class="stack">' + houseListHtml() + "</div>";
+  }
+  function renderHouseList() { const el = $("#house-list"); if (el) el.innerHTML = houseListHtml(); }
+
+  function viewEquipe() {
+    let h = '<div class="bar"><h2>' + esc(t("teamTitle")) + ' <span class="hint">· ' + num(state.workers.length) + '</span></h2><button class="btn primary" data-act="new-worker">' + IC.plus + esc(t("addWorker")) + "</button></div>";
+    if (!state.workers.length) return h + '<p class="hint">' + esc(t("emptyTeam")) + "</p>";
+    const ws = iso(monday(today())), we = iso(addDays(monday(today()), 6));
+    return h + '<ul class="list">' + state.workers.map((w) => {
+      const tot = state.missions.filter((m) => m.workerId === w.id && m.date >= ws && m.date <= we).reduce((s, m) => s + info(m).total, 0);
+      const mine = state.houses.filter((x) => w.maisons.indexOf(x.id) >= 0), ref = mine.reduce((s, x) => s + x.duree, 0);
+      return '<li class="wcard"><div class="row"><div><div class="name">' + chip(w) + '</div><div class="facts"><span class="sub">' + esc(t("nAssigned", mine.length)) + '</span><span class="sub">' + esc(t("thisWeek")) + durH(tot) + "</span></div></div>" +
+        '<button class="btn small" data-act="edit-worker" data-id="' + w.id + '">' + esc(t("edit")) + "</button></div>" +
+        (mine.length ? "<details><summary>" + esc(t("showHouses")) + '<span class="sub">' + esc(t("tour", dur(ref))) + '</span></summary><div class="wl">' + groupByCity(mine).map((g) => "<p><b>" + u(g.label) + "</b> : " + g.items.map((x) => u(x.nom) + " (" + dur(x.duree) + (x.extra ? " + " + dur(x.extra) : "") + ")").join(lang === "ar" ? "، " : ", ") + "</p>").join("") + "</div></details>" : "") + "</li>";
+    }).join("") + "</ul>";
+  }
+
+  function hoursRange() {
+    const a = parse(ui.hAnchor);
+    if (ui.hPeriod === "month") { const f = new Date(a.getFullYear(), a.getMonth(), 1), l = new Date(a.getFullYear(), a.getMonth() + 1, 0); return { from: iso(f), to: iso(l), label: F.month.format(f), week: false }; }
+    const f = monday(a), l = addDays(f, 6);
+    return { from: iso(f), to: iso(l), label: F.short.format(f) + " – " + F.short.format(l) + " " + l.getFullYear(), week: true };
+  }
+  function stats(from, to) {
+    return state.workers.map((w) => {
+      const ms = state.missions.filter((m) => m.workerId === w.id && m.date >= from && m.date <= to).sort((a, b) => (a.date + a.debut).localeCompare(b.date + b.debut));
+      let base = 0, extra = 0, done = 0;
+      ms.forEach((m) => { const i = info(m); base += i.base; extra += i.extra; if (m.done) done += i.total; });
+      return { w: w, ms: ms, base: base, extra: extra, total: base + extra, done: done };
+    });
+  }
+  function viewHeures() {
+    const r = hoursRange(), st = stats(r.from, r.to);
+    let h = '<h2 class="printonly">' + esc(t("printTitleHours") + " — " + r.label) + '</h2><div class="bar"><div class="grp"><div class="seg" role="group" aria-label="' + esc(t("period")) + '"><button data-act="hp-week" aria-pressed="' + r.week + '">' + esc(t("week")) + '</button><button data-act="hp-month" aria-pressed="' + !r.week + '">' + esc(t("month")) + "</button></div>" +
+      nav("h-prev", "h-next", "h-today") + '<span class="period">' + esc(r.label) + "</span></div>" +
+      '<div class="grp"><button class="btn" data-act="print">' + esc(t("doPrint")) + '</button><button class="btn" data-act="export" data-from="' + r.from + '" data-to="' + r.to + '">' + IC.down + esc(t("doXlsx")) + "</button></div></div>";
+    if (!state.workers.length) return h + '<p class="hint">' + esc(t("addWorkersToSee")) + "</p>";
+    const T0 = { n: 0, base: 0, extra: 0, total: 0, done: 0 };
+    h += '<div class="tablewrap"><table><thead><tr><th>' + esc(t("cEmployee")) + "</th><th>" + esc(t("cMissions")) + "</th><th>" + esc(t("cBase")) + "</th><th>" + esc(t("cExtra")) + "</th><th>" + esc(t("cTotal")) + "</th><th>" + esc(t("cDone")) + "</th></tr></thead><tbody>";
+    st.forEach((s) => {
+      T0.n += s.ms.length; T0.base += s.base; T0.extra += s.extra; T0.total += s.total; T0.done += s.done;
+      h += '<tr><th scope="row">' + chip(s.w) + "</th><td>" + num(s.ms.length) + "</td><td>" + durH(s.base) + "</td><td>" + durH(s.extra) + "</td><td><b>" + durH(s.total) + "</b></td><td>" + durH(s.done) + "</td></tr>";
+    });
+    h += "</tbody><tfoot><tr><th scope=\"row\">" + esc(t("total")) + "</th><td>" + num(T0.n) + "</td><td>" + durH(T0.base) + "</td><td>" + durH(T0.extra) + "</td><td>" + durH(T0.total) + "</td><td>" + durH(T0.done) + "</td></tr></tfoot></table></div>";
+    const sg = svGroups([].concat.apply([], st.map((s) => s.ms)));
+    if (sg.length) {
+      h += '<h3 class="subh">' + esc(t("sumByService")) + '</h3><div class="tablewrap"><table><thead><tr><th class="txt">' + esc(t("fService")) + "</th><th>" + esc(t("cMissions")) + "</th><th>" + esc(t("cBase")) + "</th><th>" + esc(t("cExtra")) + "</th><th>" + esc(t("cTotal")) + "</th></tr></thead><tbody>" +
+        sg.map((g) => '<tr><th scope="row" class="txt">' + u(svName(g.id)) + "</th><td>" + num(g.n) + "</td><td>" + durH(g.b) + "</td><td>" + durH(g.e) + "</td><td><b>" + durH(g.b + g.e) + "</b></td></tr>").join("") + "</tbody></table></div>";
+    }
+    h += '<p class="hint">' + esc(t("hoursHint")) + "</p>";
+    st.filter((s) => s.ms.length).forEach((s) => {
+      h += '<details class="det"><summary>' + chip(s.w) + '<span class="sub">' + esc(t("nMissions", s.ms.length)) + '</span><span class="tot">' + durH(s.total) + " · " + num(dec(s.total)) + " " + esc(t("uh")) + "</span></summary>" +
+        '<div class="tablewrap"><table><thead><tr><th>' + esc(t("cDate")) + "</th><th>" + esc(t("cSchedule")) + '</th><th class="txt">' + esc(t("cHouse")) + '</th><th class="txt">' + esc(t("cCity")) + '</th><th class="txt">' + esc(t("fService")) + "</th><th>" + esc(t("cDuration")) + "</th><th>" + esc(t("cState")) + "</th></tr></thead><tbody>" +
+        s.ms.map((m) => { const i = info(m); return "<tr><td>" + esc(F.row.format(parse(m.date))) + "</td><td>" + num(toHM(i.s) + " – " + endLabel(i.e)) + '</td><td class="txt">' + (i.h ? u(i.h.nom) : "—") + '</td><td class="txt">' + (i.h ? u(i.h.ville) : "") + '</td><td class="txt">' + u(svName(m.service)) + "</td><td>" + durH(i.total) + (i.extra ? " " + num("(+" + i.extra + ")") : "") + "</td><td>" + esc(m.done ? t("isDone") : t("planned")) + "</td></tr>"; }).join("") +
+        "</tbody></table></div></details>";
+    });
+    return h;
+  }
+  function refreshCities() {
+    const el = $("#cities"); if (!el) return;
+    el.innerHTML = Array.from(new Set(state.houses.map((h) => h.ville).filter(Boolean))).sort(F.coll.compare).map((c) => '<option value="' + esc(c) + '"></option>').join("");
+  }
+  function render() {
+    if ($("#app").hidden) return;
+    const focusId = document.activeElement && document.activeElement.id;
+    document.querySelectorAll(".tabs button").forEach((b) => b.setAttribute("aria-selected", b.dataset.tab === ui.tab ? "true" : "false"));
+    $("#view").innerHTML = ui.tab === "maisons" ? viewMaisons() : ui.tab === "equipe" ? viewEquipe() : ui.tab === "heures" ? viewHeures() : viewPlanning();
+    refreshCities();
+    if (focusId) { const f = document.getElementById(focusId); if (f) f.focus(); }
+  }
+
+  /* ---------- Dialogues ---------- */
+  const dlg = $("#dlg");
+  function openDlg(html, wide) { dlg.innerHTML = html; dlg.classList.toggle("wide", !!wide); if (typeof dlg.showModal === "function") { if (!dlg.open) dlg.showModal(); } else dlg.setAttribute("open", ""); }
+  function closeDlg() { if (typeof dlg.close === "function") { if (dlg.open) dlg.close(); } else dlg.removeAttribute("open"); }
+  let toastT;
+  function toast(m) { const el = $("#toast"); el.textContent = m; el.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove("on"), 2400); }
+  const foot = (delBtn, extra) => '<div class="dlg-foot"><div class="grp">' + (delBtn || "") + '</div><div class="grp"><button type="button" class="btn" data-act="close">' + esc(t("cancel")) + "</button>" + (extra || "") + '<button type="submit" class="btn primary">' + esc(t("save")) + "</button></div></div>";
+  const delBtn = (act, id) => '<button type="button" class="btn danger" data-act="' + act + '" data-id="' + id + '" data-confirm="' + esc(t("confirmDel")) + '">' + esc(t("del")) + "</button>";
+  function formError(m) { const e = $("#m-err"); if (e) { e.textContent = m; e.hidden = false; } }
+
+  function housesFor(wid, all, sel) {
+    const w = workerOf(wid);
+    if (!all && w && w.maisons.length) return state.houses.filter((h) => w.maisons.indexOf(h.id) >= 0 || h.id === sel);
+    return state.houses;
+  }
+  const houseOptions = (list, sel) => groupByCity(list).map((g) => '<optgroup label="' + esc(g.label) + '">' + g.items.map((h) => '<option value="' + h.id + '"' + (h.id === sel ? " selected" : "") + ">" + esc(h.nom + " · " + dur(h.duree)) + "</option>").join("") + "</optgroup>").join("");
+
+  function missionForm(m, date) {
+    const wid = m ? m.workerId : (ui.worker || (state.workers[0] || {}).id);
+    const list = housesFor(wid, false, m && m.houseId);
+    const first = (groupByCity(list)[0] || { items: [{}] }).items[0];
+    const selId = m ? m.houseId : first.id, sh = houseOf(selId) || {};
+    const v = m || { date: date || iso(today()), debut: "08:00", duree: sh.duree || 60, extra: sh.extra || 0, note: "", service: sh.service || defaultService() };
+    const hidden = state.houses.length - list.length;
+    const wOpts = state.workers.map((x) => '<option value="' + x.id + '"' + (x.id === wid ? " selected" : "") + ">" + esc(x.nom) + "</option>").join("");
+    return '<form class="dlg" data-form="mission" data-id="' + (m ? m.id : "") + '" novalidate><h2>' + esc(m ? t("editMission") : t("newMission")) + "</h2>" +
+      '<div class="fld"><label for="m-worker">' + esc(t("fWorker")) + '</label><select id="m-worker" name="workerId">' + wOpts + "</select></div>" +
+      '<div class="fld"><label for="m-house">' + esc(t("fHouse")) + '</label><select id="m-house" name="houseId">' + houseOptions(list, selId) + '</select><label class="chkrow" id="m-allrow"' + (hidden > 0 ? "" : " hidden") + '><input type="checkbox" name="showAll"><span>' + esc(t("showAll")) + ' <small id="m-hidden">' + esc(t("nNotAssigned", hidden)) + "</small></span></label></div>" +
+      '<div class="fld"><label for="m-service">' + esc(t("fService")) + '</label><select id="m-service" name="service">' + svOptions(v.service) + "</select></div>" +
+      '<div class="grid2"><div class="fld"><label for="m-date">' + esc(t("fDate")) + '</label><input id="m-date" type="date" name="date" value="' + esc(v.date) + '"></div><div class="fld"><label for="m-debut">' + esc(t("fStart")) + '</label><input id="m-debut" type="time" name="debut" value="' + esc(v.debut) + '"></div></div>' +
+      '<div class="grid2"><div class="fld"><label for="m-duree">' + esc(t("fCleanMin")) + '</label><input id="m-duree" type="number" name="duree" min="5" step="5" value="' + (v.duree || 0) + '" inputmode="numeric"></div><div class="fld"><label for="m-extra">' + esc(t("fExtraMin")) + '</label><input id="m-extra" type="number" name="extra" min="0" step="5" value="' + (v.extra || 0) + '" inputmode="numeric"></div></div>' +
+      '<div class="inline"><span class="hint">' + esc(t("addLabel")) + '</span><button type="button" class="btn small" data-act="extra" data-v="15">+15</button><button type="button" class="btn small" data-act="extra" data-v="30">+30</button><button type="button" class="btn small" data-act="extra" data-v="60">+60</button><button type="button" class="btn small" data-act="extra" data-v="0">' + esc(t("noneBtn")) + "</button></div>" +
+      '<div class="fld"><label for="m-note">' + esc(t("noteOpt")) + '</label><input id="m-note" type="text" name="note" value="' + esc(v.note) + '" maxlength="140"></div>' +
+      (m ? "" : '<div class="fld"><label for="m-repeat">' + esc(t("fRepeat")) + '</label><div class="inline"><input id="m-repeat" type="number" name="repeat" min="1" max="26" step="1" value="1" inputmode="numeric"><span class="hint">' + esc(t("repeatHint")) + "</span></div></div>") +
+      '<div class="preview" id="m-prev" aria-live="polite"></div><p class="err" id="m-err" hidden></p>' + foot(m ? delBtn("del-mission", m.id) : "") + "</form>";
+  }
+  function refreshHouseSelect() {
+    const f = $('form[data-form="mission"]'); if (!f) return false;
+    const wid = f.elements.workerId.value, all = f.elements.showAll.checked, cur = f.elements.houseId.value;
+    const list = housesFor(wid, all, null);
+    const keep = list.some((h) => h.id === cur) ? cur : (groupByCity(list)[0] || { items: [{}] }).items[0].id;
+    f.elements.houseId.innerHTML = houseOptions(list, keep);
+    const w = workerOf(wid), hidden = state.houses.length - housesFor(wid, false, null).length;
+    $("#m-allrow").hidden = !(w && w.maisons.length && hidden > 0);
+    $("#m-hidden").textContent = t("nNotAssigned", hidden);
+    return keep !== cur;
+  }
+  function applyHouseDefaults() {
+    const f = $('form[data-form="mission"]'); if (!f) return;
+    const h = houseOf(f.elements.houseId.value); if (!h) return;
+    if (svOf(h.service)) f.elements.service.value = h.service;
+    f.elements.duree.value = h.duree; f.elements.extra.value = h.extra || 0;
+  }
+  function applyServiceDefaults() {
+    const f = $('form[data-form="mission"]'); if (!f) return;
+    const h = houseOf(f.elements.houseId.value); if (!h) return;
+    const sid = f.elements.service.value;
+    if (h.durees && h.durees[sid]) { f.elements.duree.value = h.durees[sid]; f.elements.extra.value = 0; }
+    else if (sid === h.service) { f.elements.duree.value = h.duree; f.elements.extra.value = h.extra || 0; }
+  }
+  function updatePreview() {
+    const f = $('form[data-form="mission"]'); if (!f) return;
+    const fd = new FormData(f), id = f.dataset.id, box = $("#m-prev"), base = int(fd.get("duree"));
+    if (!fd.get("houseId") || !fd.get("debut") || base <= 0) { box.textContent = t("pChoose"); return; }
+    const extra = int(fd.get("extra")), s = toMin(fd.get("debut")), total = base + extra, e = s + total;
+    let out = "<div>" + esc(t("pDuration")) + "<b>" + durH(base) + "</b>" + (extra ? " + <b>" + durH(extra) + "</b> = <b>" + durH(total) + "</b>" : "") + "</div><div>" + esc(t("pRange", toHM(s), endLabel(e))).replace(/(\d\d:\d\d( \([^)]*\))?)/g, (x) => "<b>" + num(x) + "</b>") + "</div>";
+    let sum = total;
+    state.missions.filter((m) => m.id !== id && m.date === fd.get("date") && m.workerId === fd.get("workerId")).forEach((m) => {
+      const i = info(m); sum += i.total;
+      if (s < i.e && i.s < e) out += '<span class="alert">⚠ ' + esc(t("aOverlap", i.h ? i.h.nom : t("otherMission"), toHM(i.s) + " – " + endLabel(i.e))) + "</span>";
+    });
+    if (sum > DAY_LIMIT) out += '<span class="alert">⚠ ' + esc(t("pOverDay", dur(sum))) + "</span>";
+    if (e > 1440) out += '<span class="alert">⚠ ' + esc(t("aMidnight")) + "</span>";
+    box.innerHTML = out;
+  }
+
+  function houseChecklist(selected) {
+    return groupByCity(state.houses).map((g) => '<div class="cityg"><div class="cityh"><b>' + u(g.label) + '</b><button type="button" class="linkbtn" data-act="city-all">' + esc(t("checkAll")) + "</button></div>" +
+      g.items.map((h) => '<label class="chk" data-text="' + esc((h.nom + " " + h.adresse + " " + h.ville).toLowerCase()) + '"><input type="checkbox" name="maisons" value="' + h.id + '"' + (selected.indexOf(h.id) >= 0 ? " checked" : "") + "><span><b>" + u(h.nom) + "</b><small>" + (h.adresse ? u(h.adresse) + " · " : "") + esc(dur(h.duree)) + "</small></span></label>").join("") + "</div>").join("");
+  }
+  function updateCount() {
+    const f = dlg.querySelector("form"), el = $("#e-count"); if (!f || !el) return;
+    el.textContent = "(" + t("nSelected", f.querySelectorAll('input[name="maisons"]:checked').length) + ")";
+  }
+  function filterChecklist(input) {
+    const q = input.value.trim().toLowerCase();
+    dlg.querySelectorAll(".chk[data-text]").forEach((l) => { l.hidden = !!q && l.dataset.text.indexOf(q) < 0; });
+    dlg.querySelectorAll(".cityg").forEach((g) => { g.hidden = !g.querySelector(".chk:not([hidden])"); });
+  }
+  function houseForm(x, preset) {
+    const d = x ? x.duree : 120, vil = x ? x.ville : (preset && preset.ville) || "", dsv = x ? x.service : defaultService();
+    const others = state.services.map((s) => '<label class="svt" data-sv="' + esc(s.id) + '"' + (s.id === dsv ? " hidden" : "") + "><span>" + u(svName(s.id)) + '</span><input type="number" name="sv_' + esc(s.id) + '" min="0" step="5" value="' + ((x && x.durees && x.durees[s.id]) || "") + '" inputmode="numeric"></label>').join("");
+    const wk = state.workers.map((w) => '<label class="chkrow"><input type="checkbox" name="workers" value="' + w.id + '"' + (x && w.maisons.indexOf(x.id) >= 0 ? " checked" : "") + ">" + chip(w) + "</label>").join("");
+    return '<form class="dlg" data-form="house" data-id="' + (x ? x.id : "") + '" novalidate><h2>' + esc(x ? t("editHouse") : t("newHouse")) + "</h2>" +
+      '<div class="fld"><label for="x-nom">' + esc(t("fHouseName")) + '</label><input id="x-nom" type="text" name="nom" value="' + esc(x ? x.nom : "") + '" maxlength="80"></div>' +
+      '<div class="grid2"><div class="fld"><label for="x-adr">' + esc(t("fAddress")) + '</label><input id="x-adr" type="text" name="adresse" value="' + esc(x ? x.adresse : "") + '" maxlength="140"></div><div class="fld"><label for="x-ville">' + esc(t("fCity")) + '</label><input id="x-ville" type="text" name="ville" value="' + esc(vil) + '" maxlength="60" list="cities" autocomplete="off"></div></div>' +
+      '<div class="fld"><label for="x-service">' + esc(t("fMainService")) + '</label><select id="x-service" name="service">' + svOptions(dsv) + "</select></div>" +
+      '<div class="fld"><span class="lab">' + esc(t("fClean")) + '</span><div class="inline"><input id="x-h" type="number" name="h" min="0" max="12" step="1" value="' + Math.floor(d / 60) + '" aria-label="' + esc(t("hUnit")) + '" inputmode="numeric"> ' + esc(t("hUnit")) + ' <input id="x-min" type="number" name="min" min="0" max="59" step="5" value="' + (d % 60) + '" aria-label="' + esc(t("minUnit")) + '" inputmode="numeric"> ' + esc(t("minUnit")) + "</div></div>" +
+      '<div class="fld"><label for="x-extra">' + esc(t("fExtraUsual")) + '</label><input id="x-extra" type="number" name="extra" min="0" step="5" value="' + (x ? x.extra : 0) + '" inputmode="numeric"><small>' + esc(t("extraHelp")) + "</small></div>" +
+      (state.services.length > 1 ? '<div class="fld"><span class="lab">' + esc(t("svTimes")) + '</span><div class="svgrid">' + others + "</div><small>" + esc(t("svTimesHelp")) + "</small></div>" : "") +
+      '<div class="fld"><label for="x-tarif">' + esc(t("fTarif")) + '</label><input id="x-tarif" type="number" name="tarif" min="0" step="0.5" value="' + (x && x.tarif ? x.tarif : "") + '" inputmode="decimal"><small>' + esc(t("tarifHelp")) + "</small></div>" +
+      '<div class="fld"><label for="x-note">' + esc(t("noteOpt")) + '</label><input id="x-note" type="text" name="note" value="' + esc(x ? x.note : "") + '" maxlength="140"></div>' +
+      (state.workers.length ? '<div class="fld"><span class="lab">' + esc(t("fAssigned")) + '</span><div class="inline">' + wk + "</div></div>" : "") +
+      '<p class="err" id="m-err" hidden></p>' + foot(x ? delBtn("del-house", x.id) : "", x ? "" : '<button type="submit" class="btn" data-again="1">' + esc(t("saveAgain")) + "</button>") + "</form>";
+  }
+  function workerForm(x) {
+    return '<form class="dlg" data-form="worker" data-id="' + (x ? x.id : "") + '" novalidate><h2>' + esc(x ? t("editWorker") : t("newWorker")) + "</h2>" +
+      '<div class="fld"><label for="e-nom">' + esc(t("fName")) + '</label><input id="e-nom" type="text" name="nom" value="' + esc(x ? x.nom : "") + '" maxlength="60"></div>' +
+      '<div class="fld"><span class="lab">' + esc(t("fAssignedHouses")) + ' <span id="e-count" class="hint"></span></span>' +
+      (state.houses.length ? '<label class="sr-only" for="e-search">' + esc(t("searchChk")) + '</label><input id="e-search" type="search" placeholder="' + esc(t("searchChk")) + '"><div class="assign">' + houseChecklist(x ? x.maisons : []) + "</div>" : '<p class="hint">' + esc(t("addHousesFirst")) + "</p>") + "</div>" +
+      '<p class="err" id="m-err" hidden></p>' + foot(x ? delBtn("del-worker", x.id) : "") + "</form>";
+  }
+  function settingsView() {
+    const a = readAuth();
+    return '<div class="dlg"><h2>' + esc(t("setTitle")) + (a ? ' <span class="hint">· ' + u(a.user) + "</span>" : "") + "</h2>" +
+      companyHtml() + servicesHtml() + '<section class="sec"><h3>' + esc(t("backup")) + '</h3><p class="hint">' + esc(t("backupHint")) + '</p><div class="inline"><button type="button" class="btn" data-act="export-backup">' + IC.down + esc(t("exportBackup")) + '</button><button type="button" class="btn" data-act="export-all">' + IC.down + esc(t("exportAll")) + '</button><label class="btn" for="imp-file">' + esc(t("importBackup")) + '</label><input id="imp-file" class="sr-only" type="file" accept=".json,application/json"></div><div id="imp-box" class="sec" hidden></div></section>' +
+      '<form class="sec form" data-form="pwd" novalidate><h3>' + esc(t("changePwd")) + "</h3>" +
+      '<div class="fld"><label for="p-cur">' + esc(t("curPwd")) + '</label><input id="p-cur" name="cur" type="password" autocomplete="current-password"></div>' +
+      '<div class="grid2"><div class="fld"><label for="p-new">' + esc(t("newPwd")) + '</label><input id="p-new" name="n1" type="password" autocomplete="new-password"></div><div class="fld"><label for="p-new2">' + esc(t("confirmPwd")) + '</label><input id="p-new2" name="n2" type="password" autocomplete="new-password"></div></div>' +
+      '<p class="err" id="m-err" hidden></p><div><button type="submit" class="btn">' + esc(t("changePwd")) + "</button></div></form>" +
+      '<div class="dlg-foot"><span></span><button type="button" class="btn primary" data-act="close">' + esc(t("close")) + "</button></div></div>";
+  }
+
+  /* ---------- Actions ---------- */
+  function saveMission(f) {
+    const fd = new FormData(f), id = f.dataset.id;
+    const rec = { date: fd.get("date"), houseId: fd.get("houseId"), workerId: fd.get("workerId"), service: String(fd.get("service") || defaultService()), debut: fd.get("debut"), duree: int(fd.get("duree")), extra: int(fd.get("extra")), note: String(fd.get("note") || "").trim() };
+    if (!rec.date || !rec.houseId || !rec.workerId || !rec.debut) { formError(t("eMission")); return; }
+    if (rec.duree <= 0) { formError(t("eDur")); return; }
+    if (id) { const m = state.missions.find((x) => x.id === id); if (m) Object.assign(m, rec); }
+    else {
+      const n = Math.min(26, Math.max(1, parseInt(fd.get("repeat"), 10) || 1));
+      for (let k = 0; k < n; k++) state.missions.push(Object.assign({}, rec, { id: uid(), date: iso(addDays(parse(rec.date), 7 * k)), done: false }));
+    }
+    save(); ui.weekStart = iso(monday(parse(rec.date)));
+    closeDlg(); toast(t(id ? "toastUpdM" : "toastAddedM")); render();
+  }
+  function saveHouse(f, again) {
+    const fd = new FormData(f), id = f.dataset.id, nom = String(fd.get("nom") || "").trim(), duree = int(fd.get("h")) * 60 + int(fd.get("min"));
+    if (!nom) { formError(t("eHouseName")); return; }
+    if (duree <= 0) { formError(t("eDur")); return; }
+    const service = String(fd.get("service") || defaultService()), durees = {};
+    state.services.forEach((s) => { if (s.id !== service) { const v = int(fd.get("sv_" + s.id)); if (v > 0) durees[s.id] = v; } });
+    const rec = { nom: nom, adresse: String(fd.get("adresse") || "").trim(), ville: String(fd.get("ville") || "").trim(), service: service, durees: durees, duree: duree, extra: int(fd.get("extra")), tarif: Math.max(0, Number(String(fd.get("tarif") || "").replace(",", ".")) || 0), note: String(fd.get("note") || "").trim() };
+    let hid = id;
+    if (id) Object.assign(houseOf(id), rec); else { hid = uid(); state.houses.push(Object.assign({ id: hid }, rec)); }
+    const chosen = fd.getAll("workers");
+    state.workers.forEach((w) => {
+      const has = w.maisons.indexOf(hid) >= 0, want = chosen.indexOf(w.id) >= 0;
+      if (want && !has) w.maisons.push(hid);
+      if (!want && has) w.maisons = w.maisons.filter((x) => x !== hid);
+    });
+    save(); render();
+    if (again) { openDlg(houseForm(null, { ville: rec.ville })); const n = $("#x-nom"); if (n) n.focus(); toast(t("toastHouseNext")); }
+    else { closeDlg(); toast(t("toastHouse")); }
+  }
+  function saveWorker(f) {
+    const fd = new FormData(f), id = f.dataset.id, nom = String(fd.get("nom") || "").trim();
+    if (!nom) { formError(t("eWorkerName")); return; }
+    const rec = { nom: nom, maisons: fd.getAll("maisons") };
+    if (id) Object.assign(workerOf(id), rec); else state.workers.push(Object.assign({ id: uid() }, rec));
+    save(); closeDlg(); toast(t("toastWorker")); render();
+  }
+  async function changePwd(f) {
+    const fd = new FormData(f), a = readAuth(), cur = String(fd.get("cur") || ""), n1 = String(fd.get("n1") || ""), n2 = String(fd.get("n2") || "");
+    if (!a) return;
+    if (n1.length < 6) { formError(t("eShort")); return; }
+    if (n1 !== n2) { formError(t("eMismatch")); return; }
+    if ((await derive(cur, a.salt, a.iter)) !== a.hash) { formError(t("ePwdWrong")); return; }
+    const salt = b64e(crypto.getRandomValues(new Uint8Array(16))), hash = await derive(n1, salt, a.iter);
+    ls.set(K.auth, JSON.stringify({ user: a.user, salt: salt, iter: a.iter, hash: hash }));
+    ls.del(K.stay); closeDlg(); toast(t("pwdChanged"));
+  }
+  /* Téléchargement : API de la page hébergée si elle existe, sinon lien classique. */
+  async function download(name, text, type) {
+    try {
+      const use = window.claude && typeof window.claude.use === "function" ? window.claude.use.bind(window.claude) : null;
+      const d = use ? await use("downloads") : null;
+      if (d) { await d.save({ filename: name, data: text }); return true; }
+    } catch (e) { if (e && e.code === "declined") return false; }
+    try {
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(text instanceof Blob ? text : new Blob([text], { type: type }));
+      a.download = name; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+      return true;
+    } catch (e) { return false; }
+  }
+  /* ---------- Excel (.xlsx) sans biblioth\u00E8que ---------- */
+  const XLSX_MIME = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+  const CRC = (() => { const tb = []; for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; tb[n] = c >>> 0; } return tb; })();
+  function crc32(b) { let c = 0xFFFFFFFF; for (let i = 0; i < b.length; i++) c = CRC[(c ^ b[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+  function makeZip(files) {
+    const enc = new TextEncoder(), now = new Date();
+    const dt = (now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1);
+    const dd = ((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate();
+    const parts = [], central = []; let offset = 0;
+    files.forEach((f) => {
+      const name = enc.encode(f.name), data = enc.encode(f.text), crc = crc32(data);
+      const lh = new DataView(new ArrayBuffer(30));
+      lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true); lh.setUint16(8, 0, true);
+      lh.setUint16(10, dt, true); lh.setUint16(12, dd, true); lh.setUint32(14, crc, true); lh.setUint32(18, data.length, true); lh.setUint32(22, data.length, true);
+      lh.setUint16(26, name.length, true); lh.setUint16(28, 0, true);
+      parts.push(new Uint8Array(lh.buffer), name, data);
+      const ch = new DataView(new ArrayBuffer(46));
+      ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true); ch.setUint16(8, 0x0800, true); ch.setUint16(10, 0, true);
+      ch.setUint16(12, dt, true); ch.setUint16(14, dd, true); ch.setUint32(16, crc, true); ch.setUint32(20, data.length, true); ch.setUint32(24, data.length, true);
+      ch.setUint16(28, name.length, true); ch.setUint32(42, offset, true);
+      central.push(new Uint8Array(ch.buffer), name);
+      offset += 30 + name.length + data.length;
+    });
+    let csize = 0; central.forEach((c) => { csize += c.length; });
+    const end = new DataView(new ArrayBuffer(22));
+    end.setUint32(0, 0x06054b50, true); end.setUint16(8, files.length, true); end.setUint16(10, files.length, true); end.setUint32(12, csize, true); end.setUint32(16, offset, true);
+    return new Blob(parts.concat(central, [new Uint8Array(end.buffer)]), { type: XLSX_MIME });
+  }
+  const xe = (s) => String(s == null ? "" : s).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  function colName(i) { let s = ""; i++; while (i > 0) { const m = (i - 1) % 26; s = String.fromCharCode(65 + m) + s; i = Math.floor((i - 1) / 26); } return s; }
+  const B = (v) => ({ v: v, s: 1 }), N2 = (v) => ({ v: v, s: 2 }), BN2 = (v) => ({ v: v, s: 3 }), EUR = (v) => ({ v: v, s: 4 }), BEUR = (v) => ({ v: v, s: 5 });
+  const hrs = (m) => m / 60; /* valeur exacte : la cellule affiche 2 décimales, les totaux restent justes */
+  const FN2 = (f, v) => ({ f: f, v: v, s: 2 }), BFN2 = (f, v) => ({ f: f, v: v, s: 3 });
+  function sheetXml(rows, widths) {
+    let x = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetViews><sheetView workbookViewId="0"' + (lang === "ar" ? ' rightToLeft="1"' : "") + "/></sheetViews>";
+    if (widths) x += "<cols>" + widths.map((w, i) => '<col min="' + (i + 1) + '" max="' + (i + 1) + '" width="' + w + '" customWidth="1"/>').join("") + "</cols>";
+    x += "<sheetData>";
+    rows.forEach((r, ri) => {
+      x += '<row r="' + (ri + 1) + '">';
+      r.forEach((c, ci) => {
+        if (c == null || c === "") return;
+        const ref = colName(ci) + (ri + 1), o = typeof c === "object" ? c : { v: c, s: 0 }, st = o.s ? ' s="' + o.s + '"' : "";
+        if (o.f) x += '<c r="' + ref + '"' + st + "><f>" + xe(o.f) + "</f><v>" + o.v + "</v></c>";
+        else if (typeof o.v === "number" && isFinite(o.v)) x += '<c r="' + ref + '"' + st + "><v>" + o.v + "</v></c>";
+        else x += '<c r="' + ref + '" t="inlineStr"' + st + '><is><t xml:space="preserve">' + xe(o.v) + "</t></is></c>";
+      });
+      x += "</row>";
+    });
+    return x + "</sheetData></worksheet>";
+  }
+  const XH = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+  const XF = (n, f) => '<xf numFmtId="' + n + '" fontId="' + f + '" fillId="0" borderId="0" xfId="0"' + (n ? ' applyNumberFormat="1"' : "") + (f ? ' applyFont="1"' : "") + "/>";
+  const STYLES_XML = XH + '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="1"><numFmt numFmtId="164" formatCode="#,##0.00\\ &quot;\u20AC&quot;"/></numFmts>' +
+    '<fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills>' +
+    '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>' +
+    '<cellXfs count="6">' + XF(0, 0) + XF(0, 1) + XF(2, 0) + XF(2, 1) + XF(164, 0) + XF(164, 1) + '</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+  function buildXlsx(sheets) {
+    const names = [], R = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+    const nm = sheets.map((s, i) => { let n = String(s.name).replace(/[\[\]:*?\/\\]/g, " ").trim().slice(0, 31) || "Sheet" + (i + 1); while (names.indexOf(n) >= 0) n = n.slice(0, 27) + "_" + (i + 1); names.push(n); return n; });
+    const files = [
+      { name: "[Content_Types].xml", text: XH + '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' +
+        sheets.map((s, i) => '<Override PartName="/xl/worksheets/sheet' + (i + 1) + '.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>').join("") + '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>' },
+      { name: "_rels/.rels", text: XH + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="' + R + '/officeDocument" Target="xl/workbook.xml"/></Relationships>' },
+      { name: "xl/workbook.xml", text: XH + '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="' + R + '"><sheets>' + nm.map((n, i) => '<sheet name="' + xe(n) + '" sheetId="' + (i + 1) + '" r:id="rId' + (i + 1) + '"/>').join("") + "</sheets></workbook>" },
+      { name: "xl/_rels/workbook.xml.rels", text: XH + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' + sheets.map((s, i) => '<Relationship Id="rId' + (i + 1) + '" Type="' + R + '/worksheet" Target="worksheets/sheet' + (i + 1) + '.xml"/>').join("") + '<Relationship Id="rId' + (sheets.length + 1) + '" Type="' + R + '/styles" Target="styles.xml"/></Relationships>' },
+      { name: "xl/styles.xml", text: STYLES_XML }
+    ];
+    sheets.forEach((s, i) => files.push({ name: "xl/worksheets/sheet" + (i + 1) + ".xml", text: sheetXml(s.rows, s.widths) }));
+    return makeZip(files);
+  }
+  function missionRows(list) {
+    const rows = [T[lang].csvHead.map(B)];
+    list.slice().sort((a, b) => (a.date + a.debut).localeCompare(b.date + b.debut)).forEach((m) => {
+      const i = info(m);
+      rows.push([m.date, toHM(i.s), toHM(i.e % 1440), i.w ? i.w.nom : "", i.h ? i.h.nom : "", i.h ? i.h.adresse : "", i.h ? i.h.ville : "", svName(m.service), i.base, i.extra, i.total, N2(hrs(i.total)), m.done ? t("isDone") : t("planned"), m.note || ""]);
+    });
+    return rows;
+  }
+  const MW = [12, 8, 8, 18, 24, 30, 16, 20, 11, 12, 11, 11, 11, 24];
+  const WW = [13, 26, 16, 22, 9, 9, 12, 12, 12, 12, 30, 24];
+  /* Bloc de récapitulatif : colonnes B (libellé), C (ville), D (passages), G/H/I (heures), alignées sur le tableau du dessus. */
+  function recapBlock(rows, title, head, groups, withCity) {
+    const L = T[lang];
+    rows.push([], [B(title)]);
+    rows.push(["", B(head[0]), withCity ? B(head[1]) : "", B(head[withCity ? 2 : 1]), "", "", B(head[withCity ? 3 : 2]), B(head[withCity ? 4 : 3]), B(head[withCity ? 5 : 4])]);
+    const r0 = rows.length + 1; let n = 0, b = 0, e = 0;
+    groups.forEach((g) => { n += g.n; b += g.b; e += g.e; rows.push(["", g.nom, withCity ? g.ville : "", g.n, "", "", N2(hrs(g.b)), N2(hrs(g.e)), N2(hrs(g.b + g.e))]); });
+    const r1 = r0 + groups.length - 1;
+    rows.push(["", B(t("total")), "", B(n), "", "", BFN2("SUM(G" + r0 + ":G" + r1 + ")", hrs(b)), BFN2("SUM(H" + r0 + ":H" + r1 + ")", hrs(e)), BFN2("SUM(I" + r0 + ":I" + r1 + ")", hrs(b + e))]);
+  }
+  function workerSheet(s, from, to) {
+    const L = T[lang], rows = [[B(s.w.nom)], [L.xPeriod, fd8(from) + " – " + fd8(to)], [], [B(L.xTitleDetail)], L.xMis.map(B)];
+    const r0 = rows.length + 1;
+    s.ms.forEach((m, k) => {
+      const i = info(m), r = r0 + k;
+      rows.push([fd8(m.date), i.h ? i.h.nom : t("goneHouse"), i.h ? i.h.ville : "", svName(m.service), toHM(i.s), toHM(i.e % 1440), N2(hrs(i.base)), N2(hrs(i.extra)), FN2("G" + r + "+H" + r, hrs(i.total)), m.done ? t("isDone") : t("planned"), i.h ? i.h.adresse : "", m.note || ""]);
+    });
+    const r1 = r0 + s.ms.length - 1;
+    rows.push([B(t("total")), B(t("nMissions", s.ms.length)), "", "", "", "", BFN2("SUM(G" + r0 + ":G" + r1 + ")", hrs(s.base)), BFN2("SUM(H" + r0 + ":H" + r1 + ")", hrs(s.extra)), BFN2("SUM(I" + r0 + ":I" + r1 + ")", hrs(s.total))]);
+    const gh = {};
+    s.ms.forEach((m) => { const i = info(m), g = (gh[m.houseId] = gh[m.houseId] || { nom: i.h ? i.h.nom : t("goneHouse"), ville: i.h ? i.h.ville : "", n: 0, b: 0, e: 0 }); g.n++; g.b += i.base; g.e += i.extra; });
+    recapBlock(rows, L.xTitleHouses, L.xHouseRecap, Object.keys(gh).map((k) => gh[k]).sort((a, b) => F.coll.compare(a.nom, b.nom)), true);
+    recapBlock(rows, L.xTitleSvc, L.xSvcRecap, svGroups(s.ms).map((g) => ({ nom: svName(g.id), n: g.n, b: g.b, e: g.e })), false);
+    return rows;
+  }
+  const savedToast = (p) => p.then((ok) => { if (ok) toast(t("fileSaved")); });
+  function exportXlsx(from, to) {
+    const L = T[lang], st = stats(from, to), sum = [[B(L.xPeriod), fd8(from) + " – " + fd8(to)], [], L.xHours.map(B)];
+    let n = 0, b = 0, e = 0, tt = 0, dn = 0;
+    const s0 = sum.length + 1;
+    st.forEach((s) => { n += s.ms.length; b += s.base; e += s.extra; tt += s.total; dn += s.done; sum.push([s.w.nom, s.ms.length, N2(hrs(s.base)), N2(hrs(s.extra)), N2(hrs(s.total)), N2(hrs(s.done))]); });
+    const s1 = s0 + st.length - 1, SM = (c) => "SUM(" + c + s0 + ":" + c + s1 + ")";
+    if (st.length) sum.push([B(t("total")), { f: SM("B"), v: n, s: 1 }, BFN2(SM("C"), hrs(b)), BFN2(SM("D"), hrs(e)), BFN2(SM("E"), hrs(tt)), BFN2(SM("F"), hrs(dn))]);
+    /* Feuille « par service » : une ligne par employé et par service */
+    const sv = [L.xSvc.map(B)]; let sn = 0, sb = 0, se = 0;
+    st.forEach((s) => svGroups(s.ms).forEach((g) => { sn += g.n; sb += g.b; se += g.e; sv.push([s.w.nom, svName(g.id), g.n, N2(hrs(g.b)), N2(hrs(g.e)), N2(hrs(g.b + g.e))]); }));
+    if (sv.length > 1) { const q = (c) => "SUM(" + c + "2:" + c + sv.length + ")"; sv.push([B(t("total")), "", { f: q("C"), v: sn, s: 1 }, BFN2(q("D"), hrs(sb)), BFN2(q("E"), hrs(se)), BFN2(q("F"), hrs(sb + se))]); }
+    const list = state.missions.filter((m) => m.date >= from && m.date <= to);
+    const sheets = [{ name: L.shSummary, rows: sum, widths: [24, 14, 14, 14, 14, 14] }, { name: L.shByService, rows: sv, widths: [24, 24, 12, 14, 14, 14] }];
+    st.filter((s) => s.ms.length).forEach((s) => sheets.push({ name: s.w.nom, rows: workerSheet(s, from, to), widths: WW }));
+    sheets.push({ name: L.shMissions, rows: missionRows(list), widths: MW });
+    savedToast(download("heures-" + from + "_" + to + ".xlsx", buildXlsx(sheets), XLSX_MIME));
+  }
+  function exportAll() {
+    const L = T[lang], hs = [L.xHouses.map(B)], ts = [L.xTeam.map(B)];
+    groupByCity(state.houses).forEach((g) => g.items.forEach((h) => hs.push([h.nom, h.adresse, h.ville, svName(h.service), h.duree, h.extra, h.tarif || "", Object.keys(h.durees || {}).map((k) => svName(k) + ": " + h.durees[k]).join(", "), state.workers.filter((w) => w.maisons.indexOf(h.id) >= 0).map((w) => w.nom).join(", "), h.note])));
+    state.workers.forEach((w) => { const mine = state.houses.filter((h) => w.maisons.indexOf(h.id) >= 0); ts.push([w.nom, mine.length, mine.map((h) => h.nom + (h.ville ? " (" + h.ville + ")" : "")).join(", ")]); });
+    savedToast(download("planning-menage-" + iso(today()) + ".xlsx", buildXlsx([{ name: L.shMissions, rows: missionRows(state.missions), widths: MW }, { name: L.shHouses, rows: hs, widths: [26, 30, 16, 20, 12, 18, 12, 30, 30, 24] }, { name: L.shTeam, rows: ts, widths: [22, 16, 60] }]), XLSX_MIME));
+  }
+
+  /* ---------- Impression ---------- */
+  function printPage() { document.querySelectorAll("details.det").forEach((d) => { d.open = true; }); try { window.print(); } catch (e) {} }
+  function printHtml(html) {
+    const z = $("#printzone"); z.innerHTML = html; document.body.classList.add("pz");
+    const done = () => { document.body.classList.remove("pz"); z.innerHTML = ""; window.removeEventListener("afterprint", done); };
+    window.addEventListener("afterprint", done);
+    setTimeout(() => { try { window.print(); } catch (e) { done(); } }, 60);
+  }
+
+  /* ---------- Factures ---------- */
+  const INV_CSS = '.inv{font-family:"Segoe UI",system-ui,-apple-system,Tahoma,Arial,sans-serif;color:#111;background:#fff;font-size:14px;line-height:1.5;max-width:46rem;margin:0 auto;padding:8px}' +
+    ".inv *{box-sizing:border-box}.inv .num{direction:ltr;unicode-bidi:isolate;display:inline-block}" +
+    ".inv-top{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:flex-start}.inv-from{display:flex;flex-direction:column}" +
+    ".inv h1{font-size:28px;margin:0 0 6px;letter-spacing:.02em;line-height:1.2}.inv-title{text-align:end}" +
+    ".inv-to{margin:26px 0 6px;display:flex;flex-direction:column}.inv small{color:#555}.inv-period{margin-top:10px;color:#333}" +
+    ".inv table{width:100%;border-collapse:collapse;margin-top:14px}.inv th{background:#eef2f5;font-size:12px}" +
+    ".inv td,.inv th{padding:8px 10px;border-bottom:1px solid #d5dbe0;text-align:end;vertical-align:top}" +
+    ".inv td:nth-child(1),.inv th:nth-child(1),.inv td:nth-child(2),.inv th:nth-child(2){text-align:start}" +
+    ".inv-sum{margin-inline-start:auto;width:min(22rem,100%);margin-top:14px}.inv-sum div{display:flex;justify-content:space-between;gap:12px;padding:4px 0}" +
+    ".inv-sum .grand{font-weight:700;font-size:16px;border-top:2px solid #111;padding-top:8px;margin-top:4px}" +
+    ".inv-pay{margin-top:26px;padding-top:12px;border-top:1px solid #d5dbe0}.inv-empty{margin-top:16px;color:#a33}";
+  (function () { const st = document.createElement("style"); st.id = "invcss"; st.textContent = INV_CSS; document.head.appendChild(st); })();
+  const money = (c) => new Intl.NumberFormat("fr-BE", { style: "currency", currency: "EUR" }).format(c / 100);
+  const cents = (v) => Math.round((Number(String(v).replace(",", ".")) || 0) * 100);
+  const fd8 = (s) => String(s || "").split("-").reverse().join("/");
+  const suggestedNumber = () => today().getFullYear() + "-" + String(state.settings.prochain).padStart(3, "0");
+
+  const lineLabel = (l) => (svOf(l.service) ? svName(l.service) : t("invClean"));
+  function invoiceData(o) {
+    const h = houseOf(o.houseId) || { nom: "", adresse: "", ville: "" };
+    const all = state.missions.filter((m) => m.houseId === o.houseId && m.date >= o.from && m.date <= o.to).sort((a, b) => (a.date + a.debut).localeCompare(b.date + b.debut));
+    const list = o.only ? all.filter((m) => m.done) : all;
+    const lines = list.map((m) => { const i = info(m); return { date: m.date, service: m.service, note: m.note, extra: i.extra, minutes: i.total, amount: Math.round(i.total * o.rate / 60) }; });
+    const sub = lines.reduce((s, l) => s + l.amount, 0), vatC = Math.round(sub * o.vat / 100);
+    return { h: h, lines: lines, sub: sub, vatC: vatC, total: sub + vatC, skipped: all.length - list.length, o: o };
+  }
+  function invoiceHtml(d) {
+    const s = state.settings, o = d.o, h = d.h, ln = (v) => v ? "<div>" + u(v) + "</div>" : "";
+    return '<div class="inv" dir="' + (lang === "ar" ? "rtl" : "ltr") + '" lang="' + lang + '">' +
+      '<div class="inv-top"><div class="inv-from"><b>' + u(s.nom) + "</b>" + ln(s.adresse) + ln(s.tel) + ln(s.mail) + (s.tva ? "<div>" + esc(t("invVatNo")) + " : " + num(esc(s.tva)) + "</div>" : "") + "</div>" +
+      '<div class="inv-title"><h1>' + esc(t("invTitle")) + "</h1><div>" + esc(t("invNo")) + " " + num(esc(o.number)) + "</div><div>" + esc(t("invDate")) + " : " + num(fd8(o.date)) + "</div><div>" + esc(t("invDue")) + " : " + num(fd8(o.due)) + "</div></div></div>" +
+      '<div class="inv-to"><small>' + esc(t("invTo")) + "</small><b>" + u(h.nom) + "</b>" + ln(h.adresse) + ln(h.ville) + "</div>" +
+      '<div class="inv-period">' + esc(t("invPeriod")) + " : " + num(fd8(o.from)) + " \u2013 " + num(fd8(o.to)) + "</div>" +
+      '<table><thead><tr><th>' + esc(t("invDate")) + "</th><th>" + esc(t("invDesc")) + "</th><th>" + esc(t("invDuration")) + "</th><th>" + esc(t("invRate")) + "</th><th>" + esc(t("invAmount")) + "</th></tr></thead><tbody>" +
+      d.lines.map((l) => "<tr><td>" + num(fd8(l.date)) + "</td><td>" + esc(lineLabel(l)) + (l.note ? " \u00B7 " + u(l.note) : "") + (l.extra ? "<br><small>" + esc(t("extraPlus", dur(l.extra))) + "</small>" : "") + "</td><td>" + num(dur(l.minutes)) + "</td><td>" + num(money(o.rate)) + "</td><td>" + num(money(l.amount)) + "</td></tr>").join("") + "</tbody></table>" +
+      '<div class="inv-sum"><div><span>' + esc(t("invSubtotal")) + "</span>" + num(money(d.sub)) + "</div>" + (o.vat > 0 ? "<div><span>" + esc(t("invVat", o.vat)) + "</span>" + num(money(d.vatC)) + "</div>" : "") + '<div class="grand"><span>' + esc(t("invTotal")) + "</span>" + num(money(d.total)) + "</div></div>" +
+      (s.iban ? '<div class="inv-pay">' + esc(t("invPay")) + " : <b>" + num(esc(s.iban)) + "</b> \u00B7 " + esc(t("invNo")) + " " + num(esc(o.number)) + "</div>" : "") +
+      '<p style="margin-top:22px;color:#555">' + esc(t("invThanks")) + "</p></div>";
+  }
+  function invoiceDialog(houseId) {
+    const s = state.settings, h = houseOf(houseId), now = today();
+    const from = iso(new Date(now.getFullYear(), now.getMonth(), 1)), to = iso(new Date(now.getFullYear(), now.getMonth() + 1, 0));
+    const hOpts = groupByCity(state.houses).map((g) => '<optgroup label="' + esc(g.label) + '">' + g.items.map((x) => '<option value="' + x.id + '"' + (x.id === houseId ? " selected" : "") + ">" + esc(x.nom) + "</option>").join("") + "</optgroup>").join("");
+    return '<form class="dlg" data-form="invoice" novalidate><h2>' + esc(t("invTitle")) + "</h2>" +
+      '<div class="fld"><label for="i-house">' + esc(t("fClient")) + '</label><select id="i-house" name="houseId">' + hOpts + "</select></div>" +
+      '<div class="grid2"><div class="fld"><label for="i-from">' + esc(t("fFrom")) + '</label><input id="i-from" type="date" name="from" value="' + from + '"></div><div class="fld"><label for="i-to">' + esc(t("fTo")) + '</label><input id="i-to" type="date" name="to" value="' + to + '"></div></div>' +
+      '<div class="grid2"><div class="fld"><label for="i-inc">' + esc(t("fInclude")) + '</label><select id="i-inc" name="include"><option value="done">' + esc(t("incDone")) + '</option><option value="all">' + esc(t("incAll")) + '</option></select></div><div class="fld"><label for="i-number">' + esc(t("fNumber")) + '</label><input id="i-number" type="text" name="number" value="' + esc(suggestedNumber()) + '"></div></div>' +
+      '<div class="grid2"><div class="fld"><label for="i-date">' + esc(t("fInvDate")) + '</label><input id="i-date" type="date" name="date" value="' + iso(now) + '"></div><div class="fld"><label for="i-rate">' + esc(t("fRate")) + '</label><input id="i-rate" type="number" name="rate" min="0" step="0.5" value="' + ((h && h.tarif) || s.tarif || "") + '" inputmode="decimal"></div></div>' +
+      '<div class="grid2"><div class="fld"><label for="i-vat">' + esc(t("fVat")) + '</label><input id="i-vat" type="number" name="vat" min="0" step="0.5" value="' + s.taux + '" inputmode="decimal"></div><span></span></div>' +
+      '<p class="hint" id="i-hint"></p><div class="invprev" id="i-prev"></div>' +
+      '<div class="dlg-foot"><div class="grp"><button type="button" class="btn" data-act="close">' + esc(t("close")) + '</button></div><div class="grp"><button type="button" class="btn" data-act="inv-xlsx">' + IC.down + esc(t("btnXlsx")) + '</button><button type="button" class="btn" data-act="inv-html">' + IC.down + esc(t("btnHtml")) + '</button><button type="button" class="btn primary" data-act="inv-print">' + esc(t("btnPrint")) + "</button></div></div></form>";
+  }
+  function readInvoice() {
+    const f = $('form[data-form="invoice"]'), g = new FormData(f), s = state.settings, date = g.get("date") || iso(today());
+    return invoiceData({ houseId: g.get("houseId"), from: g.get("from"), to: g.get("to"), only: g.get("include") === "done", number: String(g.get("number") || "").trim(), date: date, due: iso(addDays(parse(date), s.jours)), rate: cents(g.get("rate")), vat: Math.max(0, Number(String(g.get("vat")).replace(",", ".")) || 0) });
+  }
+  function refreshInvoice(houseChanged) {
+    const f = $('form[data-form="invoice"]'); if (!f) return;
+    if (houseChanged) { const h = houseOf(f.elements.houseId.value); f.elements.rate.value = (h && h.tarif) || state.settings.tarif || ""; }
+    const d = readInvoice(), hint = [];
+    if (!d.o.rate) hint.push(t("invNoRate"));
+    if (d.skipped) hint.push(t("invSkipped", d.skipped));
+    $("#i-hint").textContent = hint.join(" ");
+    $("#i-prev").innerHTML = d.lines.length ? invoiceHtml(d) : '<p class="inv-empty" style="color:#a33;margin:0">' + esc(t("invNone")) + "</p>";
+  }
+  function commitNumber(n) { if (n === suggestedNumber()) { state.settings.prochain++; save(); } }
+  function invoiceAction(kind) {
+    const d = readInvoice();
+    if (!d.lines.length) { toast(t("invNone")); return; }
+    commitNumber(d.o.number);
+    const safe = String(d.o.number).replace(/[^\w.-]+/g, "-") || "facture", s = state.settings, o = d.o, L = T[lang];
+    if (kind === "print") { printHtml(invoiceHtml(d)); return; }
+    if (kind === "html") {
+      const doc = '<!doctype html><html lang="' + lang + '" dir="' + (lang === "ar" ? "rtl" : "ltr") + '"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(t("invTitle") + " " + o.number) + "</title><style>body{margin:0;padding:24px;background:#fff}" + INV_CSS + "@page{margin:14mm}</style></head><body>" + invoiceHtml(d) + "</body></html>";
+      savedToast(download("facture-" + safe + ".html", doc, "text/html;charset=utf-8")); return;
+    }
+    const rows = [[B(s.nom)], [s.adresse], [s.tel], [s.mail], [s.tva ? t("invVatNo") + " : " + s.tva : ""], [], [B(t("invTitle")), o.number], [t("invDate"), fd8(o.date)], [t("invDue"), fd8(o.due)], [t("invTo"), d.h.nom], [[d.h.adresse, d.h.ville].filter(Boolean).join(", ")], [t("invPeriod"), fd8(o.from) + " \u2013 " + fd8(o.to)], [],
+      [t("invDate"), t("invDesc"), t("invDuration") + " (h)", t("invRate"), t("invAmount")].map(B)];
+    d.lines.forEach((l) => rows.push([fd8(l.date), lineLabel(l) + (l.note ? " \u00B7 " + l.note : "") + (l.extra ? " (" + t("extraPlus", dur(l.extra)) + ")" : ""), N2(hrs(l.minutes)), EUR(o.rate / 100), EUR(l.amount / 100)]));
+    rows.push([], ["", "", "", B(t("invSubtotal")), BEUR(d.sub / 100)]);
+    if (o.vat > 0) rows.push(["", "", "", t("invVat", o.vat), EUR(d.vatC / 100)]);
+    rows.push(["", "", "", B(t("invTotal")), BEUR(d.total / 100)]);
+    if (s.iban) rows.push([], [t("invPay"), s.iban]);
+    savedToast(download("facture-" + safe + ".xlsx", buildXlsx([{ name: L.invTitle, rows: rows, widths: [14, 40, 14, 14, 16] }]), XLSX_MIME));
+  }
+
+  /* ---------- Param\u00E8tres de l'entreprise ---------- */
+  function companyHtml() {
+    const s = state.settings, fld = (id, name, label, val, type, extra) => '<div class="fld"><label for="' + id + '">' + esc(t(label)) + '</label><input id="' + id + '" type="' + (type || "text") + '" name="' + name + '" value="' + esc(val) + '"' + (extra || "") + "></div>";
+    return '<form class="sec form" data-form="company" novalidate><h3>' + esc(t("coTitle")) + "</h3>" +
+      fld("c-nom", "nom", "coName", s.nom) + fld("c-adr", "adresse", "coAddr", s.adresse) +
+      '<div class="grid2">' + fld("c-tel", "tel", "coPhone", s.tel) + fld("c-mail", "mail", "coMail", s.mail) + "</div>" +
+      '<div class="grid2">' + fld("c-tva", "tva", "coVat", s.tva) + fld("c-iban", "iban", "coIban", s.iban) + "</div>" +
+      '<div class="grid2">' + fld("c-tarif", "tarif", "defRate", s.tarif || "", "number", ' min="0" step="0.5" inputmode="decimal"') + fld("c-taux", "taux", "defVat", s.taux, "number", ' min="0" step="0.5" inputmode="decimal"') + "</div>" +
+      '<div class="grid2">' + fld("c-jours", "jours", "payDays", s.jours, "number", ' min="0" step="1" inputmode="numeric"') + fld("c-next", "prochain", "nextNo", s.prochain, "number", ' min="1" step="1" inputmode="numeric"') + "</div>" +
+      '<div><button type="submit" class="btn">' + esc(t("save")) + "</button></div></form>";
+  }
+  function servicesHtml() {
+    return '<form class="sec form" data-form="services" novalidate><h3>' + esc(t("svTitle")) + '</h3><p class="hint">' + esc(t("svHint")) + "</p>" +
+      state.services.map((s) => '<div class="svrow"><input type="text" name="sn_' + esc(s.id) + '" value="' + esc(svName(s.id)) + '" maxlength="40" aria-label="' + esc(t("svName")) + '">' +
+        (state.services.length > 1 ? '<button type="button" class="btn small danger" data-act="del-service" data-id="' + esc(s.id) + '" data-confirm="' + esc(t("confirmDel")) + '">' + esc(t("del")) + "</button>" : "") + "</div>").join("") +
+      '<div class="svrow"><input type="text" name="sn_new" placeholder="' + esc(t("svNew")) + '" maxlength="40" aria-label="' + esc(t("svNew")) + '"></div>' +
+      '<div class="inline"><button type="submit" class="btn">' + esc(t("save")) + '</button><button type="button" class="btn" data-act="sv-restore">' + esc(t("svRestore")) + "</button></div></form>";
+  }
+  function saveServices(f) {
+    const fd = new FormData(f);
+    state.services.forEach((s) => {
+      const v = String(fd.get("sn_" + s.id) || "").trim(); if (!v) return;
+      s.nom = DEFAULT_SV.indexOf(s.id) >= 0 && v === t("sv_" + s.id) ? "" : v;
+    });
+    const nn = String(fd.get("sn_new") || "").trim();
+    if (nn) state.services.push({ id: uid(), nom: nn });
+    save(); toast(t("svSaved")); openDlg(settingsView()); render();
+  }
+  function saveCompany(f) {
+    const g = new FormData(f), o = {};
+    g.forEach((v, k) => { o[k] = v; });
+    state.settings = normSettings(o); save(); toast(t("coSaved"));
+  }
+  let pendingImport = null;
+  function readBackup(file) {
+    const box = $("#imp-box"); if (!file || !box) return;
+    const r = new FileReader();
+    r.onload = () => {
+      try {
+        const d = JSON.parse(String(r.result));
+        if (!d || !Array.isArray(d.houses) || !Array.isArray(d.workers) || !Array.isArray(d.missions)) throw new Error("bad");
+        pendingImport = normalize(d);
+        box.hidden = false;
+        box.innerHTML = '<p class="hint">' + esc(t("importSummary", t("nHouses", d.houses.length), t("nWorkers", d.workers.length), t("nMissions", d.missions.length))) + '</p><div><button type="button" class="btn danger small" data-act="do-import" data-confirm="' + esc(t("importConfirm")) + '">' + esc(t("importReplace")) + "</button></div>";
+      } catch (e) { pendingImport = null; box.hidden = false; box.innerHTML = '<p class="err">' + esc(t("importErr")) + "</p>"; }
+    };
+    r.readAsText(file);
+  }
+
+  document.addEventListener("click", (ev) => {
+    const b = ev.target.closest("[data-act],[data-tab]");
+    if (!b) return;
+    if (b.dataset.tab) { ui.tab = b.dataset.tab; try { history.replaceState(null, "", "#" + ui.tab); } catch (e) {} renderChrome(); render(); return; }
+    if (b.dataset.confirm && !b.dataset.armed) { b.dataset.armed = "1"; b.textContent = b.dataset.confirm; b.classList.add("armed"); return; }
+    const act = b.dataset.act, id = b.dataset.id;
+    switch (act) {
+      case "lang": lang = lang === "ar" ? "fr" : "ar"; ls.set(K.lang, lang); makeFormatters(); document.documentElement.lang = lang; document.documentElement.dir = lang === "ar" ? "rtl" : "ltr"; closeDlg(); if ($("#app").hidden) showAuth(); else { renderChrome(); render(); } break;
+      case "logout": logout(); break;
+      case "settings": openDlg(settingsView()); break;
+      case "reset-all": Object.keys(K).forEach((k) => { if (K[k] !== K.lang) { ls.del(K[k]); ss.del(K[k]); } }); showAuth(); break;
+      case "close": closeDlg(); break;
+      case "prev-week": ui.weekStart = iso(addDays(parse(ui.weekStart), -7)); render(); break;
+      case "next-week": ui.weekStart = iso(addDays(parse(ui.weekStart), 7)); render(); break;
+      case "this-week": ui.weekStart = iso(monday(today())); render(); break;
+      case "new-mission":
+        if (!state.houses.length || !state.workers.length) { toast(t("toastAddFirst")); ui.tab = !state.houses.length ? "maisons" : "equipe"; renderChrome(); render(); break; }
+        openDlg(missionForm(null, b.dataset.date)); updatePreview(); break;
+      case "edit-mission": openDlg(missionForm(state.missions.find((m) => m.id === id))); updatePreview(); break;
+      case "toggle": { const m = state.missions.find((x) => x.id === id); if (m) { m.done = !m.done; save(); render(); } break; }
+      case "extra": { const inp = $("#m-extra"); inp.value = b.dataset.v === "0" ? 0 : (Number(inp.value) || 0) + Number(b.dataset.v); updatePreview(); break; }
+      case "del-mission": state.missions = state.missions.filter((x) => x.id !== id); save(); closeDlg(); toast(t("toastDelM")); render(); break;
+      case "new-house": openDlg(houseForm(null, { ville: ui.city })); break;
+      case "edit-house": openDlg(houseForm(houseOf(id))); break;
+      case "del-house": state.missions = state.missions.filter((m) => m.houseId !== id); state.houses = state.houses.filter((x) => x.id !== id); state.workers.forEach((w) => { w.maisons = w.maisons.filter((x) => x !== id); }); save(); closeDlg(); toast(t("toastHouseDel")); render(); break;
+      case "new-worker": openDlg(workerForm(null)); updateCount(); break;
+      case "edit-worker": openDlg(workerForm(workerOf(id))); updateCount(); break;
+      case "del-worker": state.missions = state.missions.filter((m) => m.workerId !== id); state.workers = state.workers.filter((x) => x.id !== id); if (ui.worker === id) ui.worker = ""; save(); closeDlg(); toast(t("toastWorkerDel")); render(); break;
+      case "city-all": { const boxes = Array.from(b.closest(".cityg").querySelectorAll(".chk:not([hidden]) input")), allOn = boxes.every((x) => x.checked); boxes.forEach((x) => { x.checked = !allOn; }); updateCount(); break; }
+      case "hp-week": ui.hPeriod = "week"; render(); break;
+      case "hp-month": ui.hPeriod = "month"; render(); break;
+      case "h-prev": { const a = parse(ui.hAnchor); ui.hAnchor = iso(ui.hPeriod === "month" ? new Date(a.getFullYear(), a.getMonth() - 1, 1) : addDays(a, -7)); render(); break; }
+      case "h-next": { const a = parse(ui.hAnchor); ui.hAnchor = iso(ui.hPeriod === "month" ? new Date(a.getFullYear(), a.getMonth() + 1, 1) : addDays(a, 7)); render(); break; }
+      case "h-today": ui.hAnchor = iso(today()); render(); break;
+      case "print": printPage(); break;
+      case "export": exportXlsx(b.dataset.from, b.dataset.to); break;
+      case "export-all": exportAll(); break;
+      case "del-service": if (state.services.length > 1) { state.services = state.services.filter((s) => s.id !== id); save(); openDlg(settingsView()); render(); } break;
+      case "sv-restore": DEFAULT_SV.forEach((k) => { if (!svOf(k)) state.services.push({ id: k, nom: "" }); }); save(); openDlg(settingsView()); render(); break;
+      case "invoice": openDlg(invoiceDialog(id), true); refreshInvoice(); break;
+      case "inv-print": invoiceAction("print"); break;
+      case "inv-html": invoiceAction("html"); break;
+      case "inv-xlsx": invoiceAction("xlsx"); break;
+      case "export-backup": download("planning-menage-sauvegarde-" + iso(today()) + ".json", JSON.stringify({ app: "planning-menage", v: 3, workers: state.workers, houses: state.houses, missions: state.missions, services: state.services, settings: state.settings }, null, 1), "application/json").then((ok) => { if (ok) toast(t("backupSaved")); }); break;
+      case "do-import": if (pendingImport) { state = pendingImport; pendingImport = null; save(); closeDlg(); toast(t("importDone")); render(); } break;
+    }
+  });
+  document.addEventListener("change", (ev) => {
+    const tg = ev.target;
+    if (tg.id === "imp-file") { readBackup(tg.files && tg.files[0]); return; }
+    if (tg.closest && tg.closest('form[data-form="invoice"]')) { refreshInvoice(tg.name === "houseId"); return; }
+    if (tg.dataset && tg.dataset.change === "filter-worker") { ui.worker = tg.value; render(); return; }
+    if (tg.id === "f-city") { ui.city = tg.value; renderHouseList(); return; }
+    if (tg.closest && tg.closest('form[data-form="mission"]')) {
+      if (tg.name === "workerId" || tg.name === "showAll") { if (refreshHouseSelect()) applyHouseDefaults(); }
+      else if (tg.name === "houseId") applyHouseDefaults();
+      else if (tg.name === "service") applyServiceDefaults();
+      updatePreview(); return;
+    }
+    if (tg.name === "service" && tg.closest && tg.closest('form[data-form="house"]')) { dlg.querySelectorAll(".svt").forEach((r) => { r.hidden = r.dataset.sv === tg.value; }); return; }
+    if (tg.name === "maisons") updateCount();
+  });
+  document.addEventListener("input", (ev) => {
+    const tg = ev.target;
+    if (tg.id === "f-search") { ui.q = tg.value; renderHouseList(); return; }
+    if (tg.id === "e-search") { filterChecklist(tg); return; }
+    if (tg.closest && tg.closest('form[data-form="invoice"]')) { refreshInvoice(false); return; }
+    if (tg.closest && tg.closest('form[data-form="mission"]')) updatePreview();
+  });
+  document.addEventListener("submit", (ev) => {
+    const f = ev.target.closest("form[data-form]"); if (!f) return;
+    ev.preventDefault();
+    const k = f.dataset.form;
+    if (k === "mission") saveMission(f);
+    else if (k === "house") saveHouse(f, !!(ev.submitter && ev.submitter.dataset.again));
+    else if (k === "worker") saveWorker(f);
+    else if (k === "pwd") changePwd(f);
+    else if (k === "company") saveCompany(f);
+    else if (k === "services") saveServices(f);
+    else if (k === "invoice") return;
+    else if (k === "setup") doSetup(f);
+    else if (k === "login") doLogin(f);
+  });
+
+  /* ---------- Démarrage ---------- */
+  makeFormatters();
+  document.documentElement.lang = lang; document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+  try { if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register("sw.js").catch(function () {}); } catch (e) {}
+  if (isSignedIn()) enterApp(); else showAuth();
+})();
+</script>
+
+</body>
+</html>
